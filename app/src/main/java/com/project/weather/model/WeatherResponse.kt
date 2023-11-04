@@ -9,7 +9,6 @@ data class WeatherResponse(
     @SerializedName("timezone_offset")
     val timezoneOffset: Long,
     val current: Current,
-    val minutely: List<Minutely>,
     val hourly: List<Hourly>,
     val daily: List<Daily>
 )

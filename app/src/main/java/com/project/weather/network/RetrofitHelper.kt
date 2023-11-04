@@ -1,6 +1,6 @@
 package com.project.weather.network
 
-import com.project.weather.Constants
+import com.project.weather.constants.Constants
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

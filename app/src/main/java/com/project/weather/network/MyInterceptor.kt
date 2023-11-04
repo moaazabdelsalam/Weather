@@ -1,7 +1,7 @@
 package com.project.weather.network
 
 import android.util.Log
-import com.project.weather.PrivateConstants
+import com.project.weather.constants.PrivateConstants
 import okhttp3.Interceptor
 import okhttp3.Response
 

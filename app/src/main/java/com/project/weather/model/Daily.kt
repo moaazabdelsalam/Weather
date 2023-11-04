@@ -24,7 +24,7 @@ data class Daily(
     val windDeg: Long,
     @SerializedName("wind_gust")
     val windGust: Double,
-    val weather: ArrayList<Weather>,
+    val weather: List<Weather>,
     val clouds: Long,
     val pop: Double,
     val uvi: Double
