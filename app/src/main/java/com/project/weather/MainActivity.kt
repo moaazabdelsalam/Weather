@@ -12,26 +12,35 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.*
+import com.project.weather.databinding.ActivityMainBinding
 import com.project.weather.home.viewmodel.HomeViewModel
+import com.project.weather.model.ApiState
 import com.project.weather.network.WeatherClient
 import com.project.weather.repo.Repo
+import com.project.weather.utils.collectLatestFlowOnLifecycle
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 const val LOCATION_PERMISSION_ID = 74
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geocoder: Geocoder
     private lateinit var homeViewModel: HomeViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         geocoder = Geocoder(this)
@@ -43,8 +52,24 @@ class MainActivity : AppCompatActivity() {
         )
         homeViewModel = ViewModelProvider(this, viewModelFactory)[HomeViewModel::class.java]
         //homeViewModel.getWeatherData(33.44, -94.04)
-        homeViewModel.weatherData.observe(this) {
-            Log.i("TAG", "weather data: ${it}")
+        collectLatestFlowOnLifecycle(homeViewModel.weatherDataStateFlow) { state ->
+            when (state) {
+                is ApiState.Failure -> {
+                    setFailureState()
+                    Toast.makeText(this, state.error, Toast.LENGTH_SHORT).show()
+                }
+
+                is ApiState.Loading -> setLoadingState()
+
+                is ApiState.Successful -> {
+                    lifecycleScope.launch {
+                        setSuccessState()
+                    }
+                    lifecycleScope.launch {
+                        binding.txtView.text = state.data.toString()
+                    }
+                }
+            }
         }
     }
 
@@ -127,11 +152,36 @@ class MainActivity : AppCompatActivity() {
     private fun requestNewLocationData() {
         val locationRequest = LocationRequest()
         locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        locationRequest.interval = 60 * 2 * 1000
+        locationRequest.interval = 60 * 60 * 1000
         //locationRequest.fastestInterval = 60 * 1000
 
         if (checkPermission()) fusedLocationClient.requestLocationUpdates(
             locationRequest, locationCallback, Looper.myLooper()
         )
+    }
+
+
+    private fun setLoadingState() {
+        binding.apply {
+            progressBar.visibility = View.VISIBLE
+            progressTxt.text = "updating..."
+        }
+    }
+
+    private suspend fun setSuccessState() {
+        Log.i("TAG", "update ui views: ")
+        binding.apply {
+            progressBar.visibility = View.GONE
+            progressTxt.text = "updating success"
+            delay(500)
+            progressTxt.visibility = View.GONE
+        }
+    }
+
+    private fun setFailureState() {
+        binding.apply {
+            progressBar.visibility = View.GONE
+            progressTxt.text = "updating failed"
+        }
     }
 }

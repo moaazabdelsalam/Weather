@@ -1,10 +1,11 @@
 package com.project.weather.repo
 
-import com.project.weather.model.WeatherResponse
+import com.project.weather.model.ApiState
+import kotlinx.coroutines.flow.Flow
 
 interface RepoInterface {
-    suspend fun getWeatherData(
+    suspend fun getWeatherDataOfLocation(
         latitude: Double,
         longitude: Double
-    ): WeatherResponse
+    ): Flow<ApiState>
 }

@@ -1,7 +1,10 @@
 package com.project.weather.repo
 
+import com.project.weather.model.ApiState
 import com.project.weather.model.WeatherResponse
 import com.project.weather.network.RemoteSource
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
 class Repo private constructor(private val remoteSource: RemoteSource) : RepoInterface {
 
@@ -17,9 +20,23 @@ class Repo private constructor(private val remoteSource: RemoteSource) : RepoInt
         }
     }
 
-    override suspend fun getWeatherData(
+    override suspend fun getWeatherDataOfLocation(
         latitude: Double,
         longitude: Double
-    ): WeatherResponse = remoteSource.getWeatherData(latitude, longitude)
+    ): Flow<ApiState> {
+        return flow<ApiState> {
+            emit(ApiState.Loading)
+            try {
+                val result = remoteSource.getWeatherData(latitude, longitude)
+                if (result.isSuccessful) {
+                    emit(ApiState.Successful(result.body()))
+                } else {
+                    emit(ApiState.Failure(result.message()))
+                }
+            } catch (e: Exception) {
+                emit(ApiState.Failure(e.message.toString()))
+            }
+        }
+    }
 
 }

@@ -2,14 +2,18 @@ package com.project.weather.network
 
 import com.project.weather.constants.Constants
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitHelper {
+    private val logInterceptor = HttpLoggingInterceptor().apply {
+        level = HttpLoggingInterceptor.Level.BODY
+    }
     private val client: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(MyInterceptor())
+        //.addInterceptor(logInterceptor)
         .build()
-
     val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
         .client(client)

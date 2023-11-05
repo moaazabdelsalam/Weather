@@ -1,6 +1,5 @@
 package com.project.weather.network
 
-import android.util.Log
 import com.project.weather.constants.PrivateConstants
 import okhttp3.Interceptor
 import okhttp3.Response
@@ -18,7 +17,6 @@ class MyInterceptor : Interceptor {
             .newBuilder()
             .url(url)
             .build()
-        Log.i("TAG", "intercept: $request")
 
         return chain.proceed(request)
     }
