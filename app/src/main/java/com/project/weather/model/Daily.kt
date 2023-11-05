@@ -1,6 +1,7 @@
 package com.project.weather.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Daily(
     val dt: Long,
@@ -28,4 +29,4 @@ data class Daily(
     val clouds: Long,
     val pop: Double,
     val uvi: Double
-)
+) : Serializable

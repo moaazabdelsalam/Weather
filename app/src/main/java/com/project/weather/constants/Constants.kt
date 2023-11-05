@@ -1,5 +1,7 @@
 package com.project.weather.constants
 
 object Constants {
-    val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+    const val BASE_URL = "https://api.openweathermap.org/data/2.5/"
+    const val CACHE_FILE_NAME = "weather_cache.txt"
+    var cacheDirectory = ""
 }

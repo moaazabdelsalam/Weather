@@ -20,6 +20,7 @@ import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.*
+import com.project.weather.constants.Constants
 import com.project.weather.databinding.ActivityMainBinding
 import com.project.weather.home.viewmodel.HomeViewModel
 import com.project.weather.model.ApiState
@@ -28,10 +29,15 @@ import com.project.weather.repo.Repo
 import com.project.weather.utils.collectLatestFlowOnLifecycle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 const val LOCATION_PERMISSION_ID = 74
 
 class MainActivity : AppCompatActivity() {
+    val TAG = "TAG MainActivity"
+
     private lateinit var binding: ActivityMainBinding
     lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geocoder: Geocoder
@@ -41,6 +47,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        Constants.cacheDirectory = this.cacheDir.toString()
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         geocoder = Geocoder(this)
@@ -66,11 +74,19 @@ class MainActivity : AppCompatActivity() {
                         setSuccessState()
                     }
                     lifecycleScope.launch {
-                        binding.txtView.text = state.data.toString()
+                        state.data?.let {weatherData ->
+                            binding.txtView.text = getDateTime(weatherData.current.dt)
+                        }
                     }
                 }
             }
         }
+    }
+
+    fun getDateTime(s: Long): String? {
+        val sdf = SimpleDateFormat("dd EEE MMM hh:mm,aa", Locale.ENGLISH)
+        val netDate = Date(s * 1000)
+        return sdf.format(netDate)
     }
 
     private val locationCallback: LocationCallback = object : LocationCallback() {

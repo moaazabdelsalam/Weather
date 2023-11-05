@@ -11,4 +11,4 @@ data class WeatherResponse(
     val current: Current,
     val hourly: List<Hourly>,
     val daily: List<Daily>
-)
+) : java.io.Serializable

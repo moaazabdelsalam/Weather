@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.project.weather.model.ApiState
 import com.project.weather.repo.RepoInterface
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch

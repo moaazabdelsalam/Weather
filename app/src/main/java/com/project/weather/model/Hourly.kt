@@ -1,6 +1,7 @@
 package com.project.weather.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Hourly(
     val dt: Long,
@@ -22,4 +23,4 @@ data class Hourly(
     val windGust: Double,
     val weather: List<Weather>,
     val pop: Long
-)
+) : Serializable

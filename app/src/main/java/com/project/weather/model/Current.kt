@@ -1,6 +1,7 @@
 package com.project.weather.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class Current(
     val dt: Long,
@@ -23,4 +24,4 @@ data class Current(
     @SerializedName("wind_gust")
     val windGust: Double,
     val weather: List<Weather>
-)
+): Serializable
