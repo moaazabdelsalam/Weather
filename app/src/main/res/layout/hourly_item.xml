@@ -17,8 +17,7 @@
             android:id="@+id/hourlyTimeTxtV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:textStyle="bold"
+            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -49,12 +48,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:textSize="50sp"
+            android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="@id/hourlyWeatherIcon"
             app:layout_constraintStart_toStartOf="@id/hourlyWeatherIcon"
             app:layout_constraintTop_toBottomOf="@id/hourlyWeatherDescriptionTxtV"
             tools:text="20" />
 
+        <TextView
+            android:id="@+id/hourlyTempUnitTxtV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/celsius"
+            android:textSize="16sp"
+            app:layout_constraintStart_toEndOf="@id/hourlyTempTxtV"
+            app:layout_constraintTop_toTopOf="@id/hourlyTempTxtV" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>

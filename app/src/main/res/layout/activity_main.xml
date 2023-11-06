@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
+    android:padding="16dp"
     android:scrollbars="none"
     tools:context=".MainActivity">
 
@@ -60,60 +60,74 @@
             app:layout_constraintTop_toTopOf="@id/cityNameTxtV"
             tools:text="10:20 AM" />
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/currentTempCardV"
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/currentWeatherIcon"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_marginTop="24dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dateTxtV"
+            tools:src="@drawable/weather_icon_placeholder" />
+
+        <TextView
+            android:id="@+id/currentWeatherDescriptionTxtV"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:elevation="16dp"
-            app:cardCornerRadius="16dp"
-            app:cardUseCompatPadding="true"
-            app:layout_constraintTop_toBottomOf="@id/dateTxtV">
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@id/currentWeatherIcon"
+            app:layout_constraintEnd_toEndOf="@id/currentWeatherIcon"
+            app:layout_constraintTop_toBottomOf="@id/currentWeatherIcon"
+            tools:text="Clouds" />
 
-            <ImageView
-                android:id="@+id/currentWeatherIcon"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_gravity="center|start"
-                tools:src="@drawable/weather_icon_placeholder" />
+        <TextView
+            android:id="@+id/currentTempTxtV"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:textSize="75sp"
+            app:layout_constraintBottom_toBottomOf="@id/currentWeatherIcon"
+            app:layout_constraintEnd_toStartOf="@id/currentTempUnitTxtV"
+            app:layout_constraintTop_toTopOf="@id/currentWeatherIcon"
+            tools:text="20" />
 
-            <TextView
-                android:id="@+id/currentWeatherDescriptionTxtV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start|bottom"
-                android:layout_marginStart="16dp"
-                android:layout_marginBottom="8dp"
-                android:textSize="16sp"
-                tools:text="Clouds" />
+        <TextView
+            android:id="@+id/currentTempUnitTxtV"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/celsius"
+            android:textSize="24sp"
+            app:layout_constraintBottom_toBottomOf="@id/currentWeatherIcon"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/currentWeatherIcon" />
 
-            <TextView
-                android:id="@+id/currentTempTxtV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center|end"
-                android:textSize="100sp"
-                tools:text="20" />
+        <TextView
+            android:id="@+id/currentFeelsLikeTxt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toStartOf="@id/fellsLikeTempUnitTxtV"
+            app:layout_constraintTop_toBottomOf="@id/currentTempTxtV"
+            tools:text="Feels like 32" />
 
-            <TextView
-                android:id="@+id/currentFeelsLikeTxt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end|bottom"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                android:textSize="16sp"
-                tools:text="Feels like 32" />
-
-        </androidx.cardview.widget.CardView>
+        <TextView
+            android:id="@+id/fellsLikeTempUnitTxtV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/celsius"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@id/currentTempTxtV"
+            app:layout_constraintTop_toTopOf="@id/currentFeelsLikeTxt" />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/fullDetailsCardV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:elevation="8dp"
             app:cardCornerRadius="16dp"
             app:cardUseCompatPadding="true"
-            app:layout_constraintTop_toBottomOf="@id/currentTempCardV">
+            app:layout_constraintTop_toBottomOf="@id/currentWeatherDescriptionTxtV">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -312,7 +326,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4sp"
             android:text="@string/today"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/fullDetailsCardV" />
@@ -333,13 +347,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4sp"
             android:text="@string/next_7_days"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/hourlyRecyclerV" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/weeklyRecyclerV"
+            android:id="@+id/dailyRecyclerV"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -348,6 +362,13 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/weeklyTxtV"
             tools:listitem="@layout/daily_item" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_begin="154dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
