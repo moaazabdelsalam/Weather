@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Weather</string>
+    <string name="humidity">Humidity</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="winds">Winds</string>
+    <string name="sunset">Sunset</string>
+    <string name="pressure">Pressure</string>
+    <string name="today">Today</string>
+    <string name="next_7_days">Next 7 days</string>
 </resources>

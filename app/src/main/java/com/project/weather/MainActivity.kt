@@ -1,7 +1,6 @@
 package com.project.weather
 
 
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
@@ -27,11 +26,9 @@ import com.project.weather.model.ApiState
 import com.project.weather.network.WeatherClient
 import com.project.weather.repo.Repo
 import com.project.weather.utils.collectLatestFlowOnLifecycle
+import com.project.weather.utils.getDateTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 const val LOCATION_PERMISSION_ID = 74
 
@@ -39,7 +36,7 @@ class MainActivity : AppCompatActivity() {
     val TAG = "TAG MainActivity"
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geocoder: Geocoder
     private lateinit var homeViewModel: HomeViewModel
 
@@ -59,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             )
         )
         homeViewModel = ViewModelProvider(this, viewModelFactory)[HomeViewModel::class.java]
-        //homeViewModel.getWeatherData(33.44, -94.04)
+
         collectLatestFlowOnLifecycle(homeViewModel.weatherDataStateFlow) { state ->
             when (state) {
                 is ApiState.Failure -> {
@@ -74,19 +71,13 @@ class MainActivity : AppCompatActivity() {
                         setSuccessState()
                     }
                     lifecycleScope.launch {
-                        state.data?.let {weatherData ->
-                            binding.txtView.text = getDateTime(weatherData.current.dt)
+                        state.data?.let { weatherData ->
+                            //binding.txtView.text = getDateTime(weatherData.current.dt)
                         }
                     }
                 }
             }
         }
-    }
-
-    fun getDateTime(s: Long): String? {
-        val sdf = SimpleDateFormat("dd EEE MMM hh:mm,aa", Locale.ENGLISH)
-        val netDate = Date(s * 1000)
-        return sdf.format(netDate)
     }
 
     private val locationCallback: LocationCallback = object : LocationCallback() {
@@ -95,16 +86,12 @@ class MainActivity : AppCompatActivity() {
             p0?.let {
                 val lastLocation: Location = it.lastLocation
                 geocoder.getFromLocation(
-                    lastLocation.latitude,
-                    lastLocation.longitude,
-                    1
+                    lastLocation.latitude, lastLocation.longitude, 1
                 ) { addressList ->
                     Log.i(
                         "TAG",
                         "onLocationResult: ${addressList[0].latitude}, ${addressList[0].longitude}"
                     )
-                    /*locationNameTxtView.text =
-                            addressList[0].countryName*/
                     homeViewModel.getWeatherData(addressList[0].latitude, addressList[0].longitude)
                 }
             }
@@ -113,7 +100,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         getLocation()
     }
 
@@ -158,8 +144,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun isLocationEnabled(): Boolean {
-        val locationManager: LocationManager =
-            getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager: LocationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER
         )
@@ -175,7 +160,6 @@ class MainActivity : AppCompatActivity() {
             locationRequest, locationCallback, Looper.myLooper()
         )
     }
-
 
     private fun setLoadingState() {
         binding.apply {

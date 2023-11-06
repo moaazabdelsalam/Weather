@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/hourlyTimeTxtV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="10:20 AM" />
+
+        <ImageView
+            android:id="@+id/hourlyWeatherIcon"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="@id/hourlyTimeTxtV"
+            app:layout_constraintStart_toStartOf="@id/hourlyTimeTxtV"
+            app:layout_constraintTop_toBottomOf="@id/hourlyTimeTxtV"
+            tools:src="@drawable/weather_icon_placeholder" />
+
+        <TextView
+            android:id="@+id/hourlyWeatherDescriptionTxtV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="@id/hourlyWeatherIcon"
+            app:layout_constraintStart_toStartOf="@id/hourlyWeatherIcon"
+            app:layout_constraintTop_toBottomOf="@id/hourlyWeatherIcon"
+            tools:text="Clouds" />
+
+        <TextView
+            android:id="@+id/hourlyTempTxtV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="50sp"
+            app:layout_constraintEnd_toEndOf="@id/hourlyWeatherIcon"
+            app:layout_constraintStart_toStartOf="@id/hourlyWeatherIcon"
+            app:layout_constraintTop_toBottomOf="@id/hourlyWeatherDescriptionTxtV"
+            tools:text="20" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>
