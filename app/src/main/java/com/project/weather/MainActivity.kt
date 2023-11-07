@@ -11,36 +11,27 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 import com.google.android.gms.location.*
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.ActivityMainBinding
-import com.project.weather.home.view.DailyAdapter
-import com.project.weather.home.view.HourlyAdapter
-import com.project.weather.home.viewmodel.HomeViewModel
-import com.project.weather.model.ApiState
-import com.project.weather.model.WeatherResponse
-import com.project.weather.network.WeatherClient
-import com.project.weather.repo.Repo
-import com.project.weather.utils.collectLatestFlowOnLifecycle
-import com.project.weather.utils.getDateAndTime
+
 
 const val LOCATION_PERMISSION_ID = 74
 
 class MainActivity : AppCompatActivity() {
-    val TAG = "TAG MainActivity"
+    private val TAG = "TAG MainActivity"
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var sharedViewModel: SharedViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     lateinit var geocoder: Geocoder
-    private lateinit var homeViewModel: HomeViewModel
-    private lateinit var hourlyAdapter: HourlyAdapter
-    private lateinit var dailyAdapter: DailyAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,24 +40,16 @@ class MainActivity : AppCompatActivity() {
 
         Constants.cacheDirectory = this.cacheDir.toString()
 
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment
+        val navController = navHostFragment.navController
+        NavigationUI.setupWithNavController(binding.bottomNav, navController)
+
+        sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         geocoder = Geocoder(this)
 
-        init()
-
-        collectLatestFlowOnLifecycle(homeViewModel.weatherDataStateFlow) { state ->
-            when (state) {
-                is ApiState.Failure -> {
-                    setFailureState(state.error)
-                }
-
-                is ApiState.Loading -> setLoadingState()
-
-                is ApiState.Successful -> {
-                    state.data?.let { weatherData -> setSuccessState(weatherData) }
-                }
-            }
-        }
+        getLocation()
     }
 
     private val locationCallback: LocationCallback = object : LocationCallback() {
@@ -78,10 +61,13 @@ class MainActivity : AppCompatActivity() {
                     lastLocation.latitude, lastLocation.longitude, 1
                 ) { addressList ->
                     Log.i(
-                        "TAG",
+                        TAG,
                         "onLocationResult: ${addressList[0].latitude}, ${addressList[0].longitude}"
                     )
-                    homeViewModel.getWeatherData(addressList[0].latitude, addressList[0].longitude)
+                    sharedViewModel.setHomeLocation(
+                        addressList[0].latitude,
+                        addressList[0].longitude
+                    )
                 }
             }
         }
@@ -89,7 +75,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        getLocation()
+
     }
 
     private fun getLocation() {
@@ -148,69 +134,5 @@ class MainActivity : AppCompatActivity() {
         if (checkPermission()) fusedLocationClient.requestLocationUpdates(
             locationRequest, locationCallback, Looper.myLooper()
         )
-    }
-
-    private fun init() {
-        val viewModelFactory = ViewModelFactory(
-            Repo.getInstance(
-                WeatherClient
-            )
-        )
-        homeViewModel = ViewModelProvider(this, viewModelFactory)[HomeViewModel::class.java]
-        hourlyAdapter = HourlyAdapter()
-        dailyAdapter = DailyAdapter()
-        binding.hourlyRecyclerV.adapter = hourlyAdapter
-        binding.dailyRecyclerV.adapter = dailyAdapter
-    }
-
-    private fun setLoadingState() {
-        binding.apply {
-            progressBar.visibility = View.VISIBLE
-            progressTxt.text = "updating..."
-        }
-    }
-
-    private fun setFailureState(error: String) {
-        binding.apply {
-            progressBar.visibility = View.GONE
-            progressTxt.text = "updating failed"
-        }
-        Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun setSuccessState(weatherData: WeatherResponse) {
-        Log.i("TAG", "update ui views: ")
-        binding.apply {
-            progressBar.visibility = View.GONE
-            progressTxt.text = "updating success"
-            setDataOnViews(weatherData)
-            progressTxt.visibility = View.GONE
-        }
-    }
-
-    private fun setDataOnViews(weatherData: WeatherResponse) {
-        val currentDate = getDateAndTime(weatherData.current.dt)
-        Log.i(TAG, "setDataOnViews: $currentDate")
-        val sunrise = getDateAndTime(weatherData.current.sunrise)
-        val sunset = getDateAndTime(weatherData.current.sunset)
-        binding.apply {
-            cityNameTxtV.text = weatherData.timezone.split("/")[1]
-            dateTxtV.text =
-                "${currentDate[Constants.DAY_OF_WEEK_KEY]}, ${currentDate[Constants.MONTH_KEY]} ${currentDate[Constants.DAY_OF_MONTH_KEY]}, ${currentDate[Constants.YEAR_KEY]}"
-            timeTxtV.text = "${currentDate[Constants.TIME_KEY]} ${currentDate[Constants.AM_PM_KEY]}"
-            currentWeatherIcon.setImageResource(R.drawable.weather_icon_placeholder)
-            currentWeatherDescriptionTxtV.text = weatherData.current.weather[0].description
-            currentTempTxtV.text = weatherData.current.temp.toInt().toString()
-            currentFeelsLikeTxt.text =
-                "Feels like ${weatherData.current.feelsLike.toInt().toString()}"
-            humidityValueTxtV.text = weatherData.current.humidity.toString() + "%"
-            windSpeedValueTxtV.text = weatherData.current.windSpeed.toString() + " m/s"
-            pressureValueTxtV.text = weatherData.current.pressure.toString() + " hPa"
-            cloudsValueTxtV.text = weatherData.current.clouds.toString() + "%"
-            sunriseValueTxtV.text = "${sunrise[Constants.TIME_KEY]} ${sunrise[Constants.AM_PM_KEY]}"
-            sunsetValueTxtV.text = "${sunset[Constants.TIME_KEY]} ${sunset[Constants.AM_PM_KEY]}"
-            hourlyAdapter.submitList(weatherData.hourly)
-            dailyAdapter.submitList(weatherData.daily)
-        }
     }
 }

@@ -22,5 +22,5 @@ data class Hourly(
     @SerializedName("wind_gust")
     val windGust: Double,
     val weather: List<Weather>,
-    val pop: Long
+    val pop: Double
 ) : Serializable

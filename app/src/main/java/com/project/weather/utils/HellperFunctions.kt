@@ -1,6 +1,7 @@
 package com.project.weather.utils
 
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -12,7 +13,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-fun <T> AppCompatActivity.collectLatestFlowOnLifecycle(
+fun <T> Fragment.collectLatestFlowOnLifecycle(
     flow: Flow<T>,
     collect: suspend (T) -> Unit
 ) {

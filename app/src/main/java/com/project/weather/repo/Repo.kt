@@ -37,6 +37,7 @@ class Repo private constructor(private val remoteSource: RemoteSource) : RepoInt
         return flow<ApiState> {
             val cachedWeatherData = readCachedWeatherData()
             if (cachedWeatherData != null) {
+                //Log.i(TAG, "cached data: ${cachedWeatherData.current.temp}")
                 emit(ApiState.Successful(cachedWeatherData))
             }
             emit(ApiState.Loading)
@@ -79,7 +80,7 @@ class Repo private constructor(private val remoteSource: RemoteSource) : RepoInt
                 val fileInputStream = FileInputStream(file)
                 val objectInputStream = ObjectInputStream(fileInputStream)
                 val weatherData = objectInputStream.readObject() as WeatherResponse
-                Log.i(TAG, "readCachedWeatherData: $weatherData")
+                Log.i(TAG, "readCachedWeatherData: success")
                 weatherData
             }
         } catch (e: Exception) {
