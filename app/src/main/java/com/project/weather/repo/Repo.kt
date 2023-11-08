@@ -2,7 +2,9 @@ package com.project.weather.repo
 
 import android.util.Log
 import com.project.weather.constants.Constants
+import com.project.weather.local.database.LocalSource
 import com.project.weather.model.ApiState
+import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.WeatherResponse
 import com.project.weather.network.RemoteSource
 import kotlinx.coroutines.Dispatchers
@@ -15,15 +17,17 @@ import java.io.FileOutputStream
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 
-class Repo private constructor(private val remoteSource: RemoteSource) : RepoInterface {
+class Repo private constructor(
+    private val remoteSource: RemoteSource,
+    private val localSource: LocalSource) : RepoInterface {
     val TAG = "TAG Repo"
 
     companion object {
         @Volatile
         private var _instance: Repo? = null
-        fun getInstance(remoteSource: RemoteSource): Repo {
+        fun getInstance(remoteSource: RemoteSource, localSource: LocalSource): Repo {
             return _instance ?: synchronized(this) {
-                val instance = Repo(remoteSource)
+                val instance = Repo(remoteSource, localSource)
                 _instance = instance
                 instance
             }
@@ -54,6 +58,12 @@ class Repo private constructor(private val remoteSource: RemoteSource) : RepoInt
             }
         }
     }
+
+    override suspend fun addToFavorite(location: FavoriteLocation) = localSource.addToFavorite(location)
+
+    override suspend fun deleteFromFavorite(location: FavoriteLocation) = localSource.deleteFromFavorite(location)
+
+    override fun getAllFavoriteLocations() = localSource.getAllFavoriteLocations()
 
     private suspend fun cacheWeatherData(weatherData: WeatherResponse?) {
         val file = File(Constants.cacheDirectory, Constants.CACHE_FILE_NAME)

@@ -1,10 +1,19 @@
 package com.project.weather.model
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import org.jetbrains.annotations.NotNull
+
+@Entity(tableName = "favorite_table")
 data class FavoriteLocation(
-    val timezone: String,
-    val main: String,
-    val description: String,
-    val icon: String,
-    val min: Double,
-    val max: Double,
+    var lat: Double,
+    var lon: Double,
+    @NotNull
+    @PrimaryKey
+    var timezone: String,
+    var main: String,
+    var description: String,
+    var icon: String,
+    var min: Double,
+    var max: Double,
 )

@@ -14,6 +14,7 @@ import com.project.weather.ViewModelFactory
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.FragmentHomeBinding
 import com.project.weather.home.viewmodel.HomeViewModel
+import com.project.weather.local.database.ConcreteLocalSource
 import com.project.weather.model.ApiState
 import com.project.weather.model.WeatherResponse
 import com.project.weather.network.WeatherClient
@@ -72,7 +73,8 @@ class HomeFragment : Fragment() {
     private fun init() {
         val viewModelFactory = ViewModelFactory(
             Repo.getInstance(
-                WeatherClient
+                WeatherClient,
+                ConcreteLocalSource.getInstance(requireContext())
             )
         )
         homeViewModel = ViewModelProvider(this, viewModelFactory)[HomeViewModel::class.java]
@@ -123,6 +125,7 @@ class HomeFragment : Fragment() {
             currentTempTxtV.text = weatherData.current.temp.toInt().toString()
             currentFeelsLikeTxt.text =
                 "Feels like ${weatherData.current.feelsLike.toInt().toString()}"
+            fullDetailsCardV.visibility = View.VISIBLE
             humidityValueTxtV.text = weatherData.current.humidity.toString() + "%"
             windSpeedValueTxtV.text = weatherData.current.windSpeed.toString() + " m/s"
             pressureValueTxtV.text = weatherData.current.pressure.toString() + " hPa"

@@ -114,6 +114,8 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == LOCATION_PERMISSION_ID) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 getLocation()
+            } else {
+                Toast.makeText(this, "Need Location Permission", Toast.LENGTH_SHORT).show()
             }
         }
     }
