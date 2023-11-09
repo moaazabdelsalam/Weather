@@ -10,15 +10,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.project.weather.R
 import com.project.weather.SharedViewModel
-import com.project.weather.ViewModelFactory
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.FragmentHomeBinding
 import com.project.weather.home.viewmodel.HomeViewModel
-import com.project.weather.local.database.ConcreteLocalSource
+import com.project.weather.local.ConcreteLocalSource
 import com.project.weather.model.ApiState
 import com.project.weather.model.WeatherResponse
 import com.project.weather.network.WeatherClient
 import com.project.weather.repo.Repo
+import com.project.weather.utils.ViewModelFactory
 import com.project.weather.utils.collectLatestFlowOnLifecycle
 import com.project.weather.utils.getDateAndTime
 import kotlinx.coroutines.delay
@@ -31,15 +31,10 @@ class HomeFragment : Fragment() {
     private lateinit var hourlyAdapter: HourlyAdapter
     private lateinit var dailyAdapter: DailyAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -50,12 +45,16 @@ class HomeFragment : Fragment() {
         init()
 
         collectLatestFlowOnLifecycle(sharedViewModel.homeLocation) { homeLocation ->
-            delay(200L)
-            Log.i(TAG, "home fragment got location: ${homeLocation.first}, ${homeLocation.second}")
-            homeViewModel.getWeatherData(homeLocation.first, homeLocation.second)
+            homeLocation?.let {
+                Log.i(
+                    TAG,
+                    "home fragment got location: ${homeLocation.first}, ${homeLocation.second}"
+                )
+                homeViewModel.getWeatherData(homeLocation.first, homeLocation.second)
+            }
         }
         collectLatestFlowOnLifecycle(homeViewModel.weatherDataStateFlow) { state ->
-            Log.i(TAG, "weather state result: $state")
+            //Log.i(TAG, "weather state result $state")
             when (state) {
                 is ApiState.Failure -> {
                     setFailureState(state.error)
@@ -106,7 +105,6 @@ class HomeFragment : Fragment() {
             progressBar.visibility = View.GONE
             progressTxt.text = "updating success"
             setDataOnViews(weatherData)
-            progressTxt.visibility = View.GONE
         }
     }
 
@@ -134,6 +132,8 @@ class HomeFragment : Fragment() {
             sunsetValueTxtV.text = "${sunset[Constants.TIME_KEY]} ${sunset[Constants.AM_PM_KEY]}"
             hourlyAdapter.submitList(weatherData.hourly)
             dailyAdapter.submitList(weatherData.daily)
+
+            progressTxt.visibility = View.GONE
         }
     }
 }

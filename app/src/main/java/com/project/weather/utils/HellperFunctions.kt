@@ -6,6 +6,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.project.weather.constants.Constants
+import com.project.weather.model.FavoriteLocation
+import com.project.weather.model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -35,5 +37,18 @@ fun getDateAndTime(s: Long): Map<String, String> {
         Constants.YEAR_KEY to result[3],
         Constants.TIME_KEY to result[4],
         Constants.AM_PM_KEY to result[5]
+    )
+}
+
+fun convertWeatherToFavorite(weatherResponse: WeatherResponse): FavoriteLocation {
+    return FavoriteLocation(
+        weatherResponse.lat,
+        weatherResponse.lon,
+        weatherResponse.timezone,
+        weatherResponse.current.weather[0].main,
+        weatherResponse.current.weather[0].description,
+        weatherResponse.current.weather[0].icon,
+        weatherResponse.daily[0].temp.min,
+        weatherResponse.daily[0].temp.max
     )
 }

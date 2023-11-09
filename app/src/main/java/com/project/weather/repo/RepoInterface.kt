@@ -10,6 +10,7 @@ interface RepoInterface {
         longitude: Double
     ): Flow<ApiState>
 
+    suspend fun getWeatherDataAndAddToFavorite(latitude: Double, longitude: Double): Long
     suspend fun addToFavorite(location: FavoriteLocation): Long
 
     suspend fun deleteFromFavorite(location: FavoriteLocation): Int

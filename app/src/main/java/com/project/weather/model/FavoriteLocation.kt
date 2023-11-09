@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull
 data class FavoriteLocation(
     var lat: Double,
     var lon: Double,
-    @NotNull
     @PrimaryKey
     var timezone: String,
     var main: String,

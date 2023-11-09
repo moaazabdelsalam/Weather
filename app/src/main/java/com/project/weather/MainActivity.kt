@@ -1,6 +1,5 @@
 package com.project.weather
 
-
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
@@ -11,6 +10,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -44,6 +44,14 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment
         val navController = navHostFragment.navController
         NavigationUI.setupWithNavController(binding.bottomNav, navController)
+
+        navController.addOnDestinationChangedListener { navController1, navDestination, bundle ->
+            if (navDestination.id == R.id.mapFragment) {
+                binding.bottomNav.visibility = View.GONE
+            } else {
+                binding.bottomNav.visibility = View.VISIBLE
+            }
+        }
 
         sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)

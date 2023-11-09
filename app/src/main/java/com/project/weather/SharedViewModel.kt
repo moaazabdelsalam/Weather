@@ -4,18 +4,27 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import org.osmdroid.util.GeoPoint
 
 class SharedViewModel : ViewModel() {
     private val TAG = "TAG SharedViewModel"
 
-    private val _homeLocation: MutableStateFlow<Pair<Double, Double>> =
-        MutableStateFlow(Pair(0.0, 0.0))
-    val homeLocation: StateFlow<Pair<Double, Double>>
+    private val _homeLocation: MutableStateFlow<Pair<Double, Double>?> =
+        MutableStateFlow(null)
+    val homeLocation: StateFlow<Pair<Double, Double>?>
         get() = _homeLocation
+    private val _locationToBeAddedToFav: MutableStateFlow<GeoPoint?> =
+        MutableStateFlow(null)
+    val locationToBeAddedToFav: StateFlow<GeoPoint?>
+        get() = _locationToBeAddedToFav
 
     fun setHomeLocation(latitude: Double, longitude: Double) {
         val location = Pair(latitude, longitude)
         _homeLocation.value = location
         Log.i(TAG, "setHomeLocation: ${location.first}, ${location.second}")
+    }
+
+    fun setLocationToBeAddedToFavorite(geoPoint: GeoPoint) {
+        _locationToBeAddedToFav.value = geoPoint
     }
 }

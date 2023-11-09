@@ -1,25 +1,18 @@
 package com.project.weather.repo
 
 import android.util.Log
-import com.project.weather.constants.Constants
-import com.project.weather.local.database.LocalSource
+import com.project.weather.local.LocalSource
 import com.project.weather.model.ApiState
 import com.project.weather.model.FavoriteLocation
-import com.project.weather.model.WeatherResponse
 import com.project.weather.network.RemoteSource
-import kotlinx.coroutines.Dispatchers
+import com.project.weather.utils.convertWeatherToFavorite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
 
 class Repo private constructor(
     private val remoteSource: RemoteSource,
-    private val localSource: LocalSource) : RepoInterface {
+    private val localSource: LocalSource
+) : RepoInterface {
     val TAG = "TAG Repo"
 
     companion object {
@@ -39,9 +32,8 @@ class Repo private constructor(
         longitude: Double
     ): Flow<ApiState> {
         return flow<ApiState> {
-            val cachedWeatherData = readCachedWeatherData()
+            val cachedWeatherData = localSource.readCachedWeatherData()
             if (cachedWeatherData != null) {
-                //Log.i(TAG, "cached data: ${cachedWeatherData.current.temp}")
                 emit(ApiState.Successful(cachedWeatherData))
             }
             emit(ApiState.Loading)
@@ -49,7 +41,7 @@ class Repo private constructor(
                 val result = remoteSource.getWeatherData(latitude, longitude)
                 if (result.isSuccessful) {
                     emit(ApiState.Successful(result.body()))
-                    cacheWeatherData(result.body())
+                    localSource.cacheWeatherData(result.body())
                 } else {
                     emit(ApiState.Failure(result.message()))
                 }
@@ -59,43 +51,30 @@ class Repo private constructor(
         }
     }
 
-    override suspend fun addToFavorite(location: FavoriteLocation) = localSource.addToFavorite(location)
-
-    override suspend fun deleteFromFavorite(location: FavoriteLocation) = localSource.deleteFromFavorite(location)
-
-    override fun getAllFavoriteLocations() = localSource.getAllFavoriteLocations()
-
-    private suspend fun cacheWeatherData(weatherData: WeatherResponse?) {
-        val file = File(Constants.cacheDirectory, Constants.CACHE_FILE_NAME)
-        withContext(Dispatchers.IO) {
-            val fileOutputStream = FileOutputStream(file)
-            val objectOutputStream = ObjectOutputStream(fileOutputStream)
-            try {
-                objectOutputStream.writeObject(weatherData)
-                objectOutputStream.flush()
-                fileOutputStream.flush()
-                objectOutputStream.close()
-                fileOutputStream.close()
-                Log.i(TAG, "cacheWeatherData: finished")
-            } catch (e: Exception) {
-                Log.i("TAG", "caching exception: $e")
-            }
-        }
-    }
-
-    private suspend fun readCachedWeatherData(): WeatherResponse? {
-        val file = File(Constants.cacheDirectory, Constants.CACHE_FILE_NAME)
+    override suspend fun getWeatherDataAndAddToFavorite(
+        latitude: Double,
+        longitude: Double
+    ): Long {
         return try {
-            withContext(Dispatchers.IO) {
-                val fileInputStream = FileInputStream(file)
-                val objectInputStream = ObjectInputStream(fileInputStream)
-                val weatherData = objectInputStream.readObject() as WeatherResponse
-                Log.i(TAG, "readCachedWeatherData: success")
-                weatherData
+            Log.i(TAG, "getWeatherDataAndAddToFavorite: on thread: ${Thread.currentThread().name}")
+            val result = remoteSource.getWeatherData(latitude, longitude)
+            if (result.isSuccessful && result.body() != null) {
+                val fav = convertWeatherToFavorite(result.body()!!)
+                localSource.addToFavorite(fav)
+            } else {
+                -1L
             }
         } catch (e: Exception) {
-            Log.i(TAG, "readCachedWeatherData exception: $e")
-            null
+            Log.i(TAG, "getWeatherDataAndAddToFavorite exception: ${e.message}")
+            -1L
         }
     }
+
+    override suspend fun addToFavorite(location: FavoriteLocation) =
+        localSource.addToFavorite(location)
+
+    override suspend fun deleteFromFavorite(location: FavoriteLocation) =
+        localSource.deleteFromFavorite(location)
+
+    override fun getAllFavoriteLocations() = localSource.getAllFavoriteLocations()
 }

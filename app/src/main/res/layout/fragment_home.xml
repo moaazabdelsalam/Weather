@@ -74,8 +74,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="16sp"
-            app:layout_constraintStart_toStartOf="@id/currentWeatherIcon"
             app:layout_constraintEnd_toEndOf="@id/currentWeatherIcon"
+            app:layout_constraintStart_toStartOf="@id/currentWeatherIcon"
             app:layout_constraintTop_toBottomOf="@id/currentWeatherIcon"
             tools:text="Clouds" />
 
@@ -124,8 +124,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
-            android:visibility="invisible"
             android:elevation="8dp"
+            android:visibility="invisible"
             app:cardCornerRadius="16dp"
             app:cardUseCompatPadding="true"
             app:layout_constraintTop_toBottomOf="@id/currentWeatherDescriptionTxtV">

@@ -1,8 +1,9 @@
 package com.project.weather.favorite.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.weather.model.ApiState
+import com.project.weather.SharedViewModel
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.repo.RepoInterface
 import kotlinx.coroutines.Dispatchers
@@ -11,11 +12,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class FavoriteViewModel(private val repo: RepoInterface) : ViewModel() {
-    private var _weatherDataStateFlow: MutableStateFlow<ApiState> =
-        MutableStateFlow(ApiState.Loading)
-    val weatherDataStateFlow: StateFlow<ApiState>
-        get() = _weatherDataStateFlow
+class FavoriteViewModel(
+    private val repo: RepoInterface,
+    private val sharedViewModel: SharedViewModel
+) : ViewModel() {
+    private val TAG = "TAG FavoriteViewModel"
+
+    private var _addToFavoriteState: MutableStateFlow<Long?> =
+        MutableStateFlow(null)
+    val addToFavoriteState: StateFlow<Long?>
+        get() = _addToFavoriteState
 
     private var _favoriteList: MutableStateFlow<List<FavoriteLocation>> = MutableStateFlow(listOf())
     val favoriteList: StateFlow<List<FavoriteLocation>>
@@ -23,6 +29,16 @@ class FavoriteViewModel(private val repo: RepoInterface) : ViewModel() {
 
     init {
         getFavoriteLocations()
+
+        viewModelScope.launch(Dispatchers.IO) {
+            sharedViewModel.locationToBeAddedToFav.collectLatest {
+                it?.let {
+                    val result = repo.getWeatherDataAndAddToFavorite(it.latitude, it.longitude)
+                    Log.i(TAG, "adding to favorite location: $result")
+                    _addToFavoriteState.value = result
+                }
+            }
+        }
     }
 
     private fun getFavoriteLocations() {
@@ -30,20 +46,6 @@ class FavoriteViewModel(private val repo: RepoInterface) : ViewModel() {
             repo.getAllFavoriteLocations().collectLatest {
                 _favoriteList.value = it
             }
-        }
-    }
-
-    fun getWeatherData(lat: Double, lon: Double) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.getWeatherDataOfLocation(lat, lon).collect {
-                _weatherDataStateFlow.value = it
-            }
-        }
-    }
-
-    fun addLocationToFavorite(location: FavoriteLocation) {
-        viewModelScope.launch(Dispatchers.IO) {
-            repo.addToFavorite(location)
         }
     }
 
