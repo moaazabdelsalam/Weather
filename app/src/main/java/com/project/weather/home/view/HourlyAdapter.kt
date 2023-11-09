@@ -6,11 +6,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.project.weather.R
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.HourlyItemBinding
 import com.project.weather.model.Hourly
 import com.project.weather.utils.getDateAndTime
+import com.project.weather.utils.getIconDrawableId
 
 class HourlyAdapter : ListAdapter<Hourly, HourlyAdapter.HourlyViewHolder>(HourlyDiffUtil()) {
     private lateinit var binding: HourlyItemBinding
@@ -29,7 +29,7 @@ class HourlyAdapter : ListAdapter<Hourly, HourlyAdapter.HourlyViewHolder>(Hourly
         holder.binding.apply {
             hourlyTimeTxtV.text =
                 "${hourlyDate[Constants.TIME_KEY]} ${hourlyDate[Constants.AM_PM_KEY]}"
-            hourlyWeatherIcon.setImageResource(R.drawable.weather_icon_placeholder)
+            hourlyWeatherIcon.setImageResource(getIconDrawableId(hourly.weather[0].icon))
             hourlyWeatherDescriptionTxtV.text = hourly.weather[0].description
             hourlyTempTxtV.text = hourly.temp.toInt().toString()
         }

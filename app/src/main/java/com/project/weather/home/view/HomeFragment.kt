@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.project.weather.R
 import com.project.weather.SharedViewModel
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.FragmentHomeBinding
@@ -21,7 +20,7 @@ import com.project.weather.repo.Repo
 import com.project.weather.utils.ViewModelFactory
 import com.project.weather.utils.collectLatestFlowOnLifecycle
 import com.project.weather.utils.getDateAndTime
-import kotlinx.coroutines.delay
+import com.project.weather.utils.getIconDrawableId
 
 class HomeFragment : Fragment() {
     private val TAG = "TAG HomeFragment"
@@ -110,7 +109,6 @@ class HomeFragment : Fragment() {
 
     private fun setDataOnViews(weatherData: WeatherResponse) {
         val currentDate = getDateAndTime(weatherData.current.dt)
-        Log.i(TAG, "setDataOnViews: $currentDate")
         val sunrise = getDateAndTime(weatherData.current.sunrise)
         val sunset = getDateAndTime(weatherData.current.sunset)
         binding.apply {
@@ -118,7 +116,7 @@ class HomeFragment : Fragment() {
             dateTxtV.text =
                 "${currentDate[Constants.DAY_OF_WEEK_KEY]}, ${currentDate[Constants.MONTH_KEY]} ${currentDate[Constants.DAY_OF_MONTH_KEY]}, ${currentDate[Constants.YEAR_KEY]}"
             timeTxtV.text = "${currentDate[Constants.TIME_KEY]} ${currentDate[Constants.AM_PM_KEY]}"
-            currentWeatherIcon.setImageResource(R.drawable.weather_icon_placeholder)
+            currentWeatherIcon.setImageResource(getIconDrawableId(weatherData.current.weather[0].icon))
             currentWeatherDescriptionTxtV.text = weatherData.current.weather[0].description
             currentTempTxtV.text = weatherData.current.temp.toInt().toString()
             currentFeelsLikeTxt.text =

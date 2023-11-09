@@ -6,9 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.project.weather.R
 import com.project.weather.databinding.FavoriteItemBinding
 import com.project.weather.model.FavoriteLocation
+import com.project.weather.utils.getIconDrawableId
 
 class FavoriteAdapter :
     ListAdapter<FavoriteLocation, FavoriteAdapter.FavoriteViewHolder>(FavoriteDiffUtil()) {
@@ -25,7 +25,7 @@ class FavoriteAdapter :
     override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
         val favorite = getItem(position)
         holder.binding.apply {
-            favoriteWeatherIcon.setImageResource(R.drawable.weather_icon_placeholder)
+            favoriteWeatherIcon.setImageResource(getIconDrawableId(favorite.icon))
             favoriteCityTxtV.text = favorite.timezone
             favoriteWeatherDescriptionTxtV.text = favorite.main
             favoriteMaxTempTxtV.text = favorite.max.toInt().toString()

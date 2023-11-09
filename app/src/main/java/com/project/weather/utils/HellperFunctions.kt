@@ -1,10 +1,10 @@
 package com.project.weather.utils
 
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.project.weather.R
 import com.project.weather.constants.Constants
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.WeatherResponse
@@ -52,3 +52,26 @@ fun convertWeatherToFavorite(weatherResponse: WeatherResponse): FavoriteLocation
         weatherResponse.daily[0].temp.max
     )
 }
+
+fun getIconDrawableId(icon: String) =
+    when (icon) {
+        "01d" -> R.drawable.clear_d
+        "01n" -> R.drawable.clear_n
+        "02d" -> R.drawable.few_clouds_d
+        "02n" -> R.drawable.few_clouds_n
+        "03d" -> R.drawable.scattered_clouds_d
+        "03n" -> R.drawable.scattered_clouds_n
+        "04d" -> R.drawable.broken_clouds_d
+        "04n" -> R.drawable.broken_clouds_n
+        "09d" -> R.drawable.shower_rain_d
+        "09n" -> R.drawable.shower_rain_n
+        "10d" -> R.drawable.rain_d
+        "10n" -> R.drawable.rain_n
+        "11d" -> R.drawable.thunder_d
+        "11n" -> R.drawable.thunder_n
+        "13d" -> R.drawable.snow
+        "13n" -> R.drawable.snow
+        "50d" -> R.drawable.mist
+        "50n" -> R.drawable.mist
+        else -> R.drawable.weather_icon_placeholder
+    }

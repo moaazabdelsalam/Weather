@@ -11,6 +11,7 @@ import com.project.weather.constants.Constants
 import com.project.weather.databinding.DailyItemBinding
 import com.project.weather.model.Daily
 import com.project.weather.utils.getDateAndTime
+import com.project.weather.utils.getIconDrawableId
 
 class DailyAdapter : ListAdapter<Daily, DailyAdapter.DailyViewHolder>(DailyDiffUtil()) {
     private lateinit var binding: DailyItemBinding
@@ -29,7 +30,7 @@ class DailyAdapter : ListAdapter<Daily, DailyAdapter.DailyViewHolder>(DailyDiffU
         holder.binding.apply {
             dailyDateTxtV.text =
                 "${date[Constants.DAY_OF_WEEK_KEY]}, ${date[Constants.MONTH_KEY]} ${date[Constants.DAY_OF_MONTH_KEY]}"
-            dailyWeatherIcon.setImageResource(R.drawable.weather_icon_placeholder)
+            dailyWeatherIcon.setImageResource(getIconDrawableId(daily.weather[0].icon))
             dailyWeatherDescriptionTxtV.text = daily.weather[0].main
             dailyMaxTempTxtV.text = daily.temp.max.toInt().toString()
             dailyMinTempTxtV.text = daily.temp.min.toInt().toString()

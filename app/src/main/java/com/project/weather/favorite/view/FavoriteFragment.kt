@@ -51,20 +51,20 @@ class FavoriteFragment : Fragment() {
         }
 
         collectLatestFlowOnLifecycle(favoriteViewModel.addToFavoriteState) { resultState ->
-            when {
-                resultState != null && resultState > -1L -> Toast.makeText(
-                    requireContext(),
-                    "successfully added to favorite",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                resultState == -1L -> Toast.makeText(
-                    requireContext(),
-                    "something went wrong please try again later",
-                    Toast.LENGTH_SHORT
-                ).show()
-
-                else -> {}
+            resultState?.let {
+                if (it > -1) {
+                    Toast.makeText(
+                        requireContext(),
+                        "successfully added to favorite",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else {
+                    Toast.makeText(
+                        requireContext(),
+                        "something went wrong please try again later",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
         collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) {
