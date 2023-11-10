@@ -14,4 +14,7 @@
     <string name="home">Home</string>
     <string name="favorite">Favorite</string>
     <string name="setting">Setting</string>
+    <string name="updating">updating...</string>
+    <string name="update_failed">update failed</string>
+    <string name="update_success">update success</string>
 </resources>

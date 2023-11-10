@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import com.project.weather.R
 import com.project.weather.SharedViewModel
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.FragmentHomeBinding
@@ -43,15 +44,11 @@ class HomeFragment : Fragment() {
 
         init()
 
-        collectLatestFlowOnLifecycle(sharedViewModel.homeLocation) { homeLocation ->
-            homeLocation?.let {
-                Log.i(
-                    TAG,
-                    "home fragment got location: ${homeLocation.first}, ${homeLocation.second}"
-                )
-                homeViewModel.getWeatherData(homeLocation.first, homeLocation.second)
-            }
+        binding.homeSwipeRefresh.setOnRefreshListener {
+            binding.homeSwipeRefresh.isRefreshing = false
+            homeViewModel.getHomeWeatherData()
         }
+
         collectLatestFlowOnLifecycle(homeViewModel.weatherDataStateFlow) { state ->
             //Log.i(TAG, "weather state result $state")
             when (state) {
@@ -73,7 +70,8 @@ class HomeFragment : Fragment() {
             Repo.getInstance(
                 WeatherClient,
                 ConcreteLocalSource.getInstance(requireContext())
-            )
+            ),
+            ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         )
         homeViewModel = ViewModelProvider(this, viewModelFactory)[HomeViewModel::class.java]
         sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
@@ -81,19 +79,20 @@ class HomeFragment : Fragment() {
         dailyAdapter = DailyAdapter()
         binding.hourlyRecyclerV.adapter = hourlyAdapter
         binding.dailyRecyclerV.adapter = dailyAdapter
+        //binding.homeSwipeRefresh.isRefreshing = true
     }
 
     private fun setLoadingState() {
         binding.apply {
-            progressBar.visibility = View.VISIBLE
-            progressTxt.text = "updating..."
+            progressTxt.visibility = View.VISIBLE
+            progressTxt.text = getString(R.string.updating)
         }
     }
 
     private fun setFailureState(error: String) {
         binding.apply {
-            progressBar.visibility = View.GONE
-            progressTxt.text = "updating failed"
+            //progressBar.visibility = View.GONE
+            progressTxt.text = getString(R.string.update_failed)
         }
         Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
     }
@@ -101,8 +100,8 @@ class HomeFragment : Fragment() {
     private fun setSuccessState(weatherData: WeatherResponse) {
         Log.i("TAG", "update ui views: ")
         binding.apply {
-            progressBar.visibility = View.GONE
-            progressTxt.text = "updating success"
+            //progressBar.visibility = View.GONE
+            progressTxt.text = getString(R.string.update_success)
             setDataOnViews(weatherData)
         }
     }
@@ -121,7 +120,6 @@ class HomeFragment : Fragment() {
             currentTempTxtV.text = weatherData.current.temp.toInt().toString()
             currentFeelsLikeTxt.text =
                 "Feels like ${weatherData.current.feelsLike.toInt().toString()}"
-            fullDetailsCardV.visibility = View.VISIBLE
             humidityValueTxtV.text = weatherData.current.humidity.toString() + "%"
             windSpeedValueTxtV.text = weatherData.current.windSpeed.toString() + " m/s"
             pressureValueTxtV.text = weatherData.current.pressure.toString() + " hPa"
@@ -131,6 +129,8 @@ class HomeFragment : Fragment() {
             hourlyAdapter.submitList(weatherData.hourly)
             dailyAdapter.submitList(weatherData.daily)
 
+            //homeSwipeRefresh.isRefreshing = false
+            homeScrollView.visibility = View.VISIBLE
             progressTxt.visibility = View.GONE
         }
     }

@@ -9,9 +9,9 @@ import org.osmdroid.util.GeoPoint
 class SharedViewModel : ViewModel() {
     private val TAG = "TAG SharedViewModel"
 
-    private val _homeLocation: MutableStateFlow<Pair<Double, Double>?> =
+    private val _homeLocation: MutableStateFlow<GeoPoint?> =
         MutableStateFlow(null)
-    val homeLocation: StateFlow<Pair<Double, Double>?>
+    val homeLocation: StateFlow<GeoPoint?>
         get() = _homeLocation
     private val _locationToBeAddedToFav: MutableStateFlow<GeoPoint?> =
         MutableStateFlow(null)
@@ -19,9 +19,9 @@ class SharedViewModel : ViewModel() {
         get() = _locationToBeAddedToFav
 
     fun setHomeLocation(latitude: Double, longitude: Double) {
-        val location = Pair(latitude, longitude)
+        val location = GeoPoint(latitude, longitude)
         _homeLocation.value = location
-        Log.i(TAG, "setHomeLocation: ${location.first}, ${location.second}")
+        Log.i(TAG, "setHomeLocation: ${location.latitude}, ${location.longitude}")
     }
 
     fun setLocationToBeAddedToFavorite(geoPoint: GeoPoint) {
