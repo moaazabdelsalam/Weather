@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import android.view.animation.AnimationUtils
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
@@ -44,33 +44,23 @@ class FavoriteFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         init()
-        attachSwipeToDeleteToRV()
 
         binding.openMapBtn.setOnClickListener {
             Navigation.findNavController(view).navigate(R.id.action_favoriteFragment_to_mapFragment)
         }
 
-        collectLatestFlowOnLifecycle(favoriteViewModel.addToFavoriteState) { resultState ->
-            resultState?.let {
-                if (it > -1) {
-                    Toast.makeText(
-                        requireContext(),
-                        "successfully added to favorite",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    Toast.makeText(
-                        requireContext(),
-                        "something went wrong please try again later",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-            }
-        }
         collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) {
             favoriteAdapter.submitList(it)
             favoriteList = it.toMutableList()
+            val layoutAnimationController =
+                AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation)
+            binding.favoriteRecyclerV.apply {
+                visibility = View.VISIBLE
+                layoutAnimation = layoutAnimationController
+                scheduleLayoutAnimation()
+            }
         }
+        attachSwipeToDeleteToRV()
     }
 
     private fun init() {

@@ -2,12 +2,13 @@ package com.project.weather.repo
 
 import android.util.Log
 import com.project.weather.local.LocalSource
-import com.project.weather.model.ApiState
 import com.project.weather.model.FavoriteLocation
+import com.project.weather.model.State
+import com.project.weather.model.WeatherResponse
 import com.project.weather.network.RemoteSource
-import com.project.weather.utils.convertWeatherToFavorite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 
 class Repo private constructor(
     private val remoteSource: RemoteSource,
@@ -27,47 +28,36 @@ class Repo private constructor(
         }
     }
 
-    override suspend fun getWeatherDataOfLocation(
+    override suspend fun getWeatherDataOfHomeLocation(
         latitude: Double,
         longitude: Double
-    ): Flow<ApiState> {
-        return flow<ApiState> {
+    ): Flow<State> {
+        return flow<State> {
             val cachedWeatherData = localSource.readCachedWeatherData()
             if (cachedWeatherData != null) {
-                emit(ApiState.Successful(cachedWeatherData))
+                emit(State.Successful(cachedWeatherData))
             }
-            emit(ApiState.Loading)
+            emit(State.Loading)
             try {
-                val result = remoteSource.getWeatherData(latitude, longitude)
-                if (result.isSuccessful) {
-                    emit(ApiState.Successful(result.body()))
-                    localSource.cacheWeatherData(result.body())
+                val response = remoteSource.getWeatherData(latitude, longitude)
+                if (response.isSuccessful) {
+                    emit(State.Successful(response.body()))
+                    localSource.cacheWeatherData(response.body())
                 } else {
-                    emit(ApiState.Failure(result.message()))
+                    emit(State.Failure(response.message()))
                 }
             } catch (e: Exception) {
-                emit(ApiState.Failure(e.message.toString()))
+                Log.i(TAG, "getWeatherDataOfHomeLocation exception: $e")
+                emit(State.Failure(e.message.toString()))
             }
         }
     }
 
-    override suspend fun getWeatherDataAndAddToFavorite(
+    override suspend fun getWeatherData(
         latitude: Double,
         longitude: Double
-    ): Long {
-        return try {
-            Log.i(TAG, "getWeatherDataAndAddToFavorite: on thread: ${Thread.currentThread().name}")
-            val result = remoteSource.getWeatherData(latitude, longitude)
-            if (result.isSuccessful && result.body() != null) {
-                val fav = convertWeatherToFavorite(result.body()!!)
-                localSource.addToFavorite(fav)
-            } else {
-                -1L
-            }
-        } catch (e: Exception) {
-            Log.i(TAG, "getWeatherDataAndAddToFavorite exception: ${e.message}")
-            -1L
-        }
+    ): Flow<State> {
+        return wrapWithFlow(remoteSource.getWeatherData(latitude, longitude))
     }
 
     override suspend fun addToFavorite(location: FavoriteLocation) =
@@ -77,4 +67,21 @@ class Repo private constructor(
         localSource.deleteFromFavorite(location)
 
     override fun getAllFavoriteLocations() = localSource.getAllFavoriteLocations()
+
+    private fun wrapWithFlow(response: Response<WeatherResponse>): Flow<State> {
+        return flow {
+            emit(State.Loading)
+            try {
+                if (response.isSuccessful) {
+                    emit(State.Successful(response.body()))
+                    localSource.cacheWeatherData(response.body())
+                } else {
+                    emit(State.Failure(response.message()))
+                }
+            } catch (e: Exception) {
+                Log.i(TAG, "wrapWithFlow exception: $e")
+                emit(State.Failure(e.message.toString()))
+            }
+        }
+    }
 }

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +15,7 @@ import com.project.weather.constants.Constants
 import com.project.weather.databinding.FragmentHomeBinding
 import com.project.weather.home.viewmodel.HomeViewModel
 import com.project.weather.local.ConcreteLocalSource
-import com.project.weather.model.ApiState
+import com.project.weather.model.State
 import com.project.weather.model.WeatherResponse
 import com.project.weather.network.WeatherClient
 import com.project.weather.repo.Repo
@@ -41,7 +42,7 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        Log.i(TAG, "onViewCreated: ")
         init()
 
         binding.homeSwipeRefresh.setOnRefreshListener {
@@ -52,13 +53,13 @@ class HomeFragment : Fragment() {
         collectLatestFlowOnLifecycle(homeViewModel.weatherDataStateFlow) { state ->
             //Log.i(TAG, "weather state result $state")
             when (state) {
-                is ApiState.Failure -> {
+                is State.Failure -> {
                     setFailureState(state.error)
                 }
 
-                is ApiState.Loading -> setLoadingState()
+                is State.Loading -> setLoadingState()
 
-                is ApiState.Successful -> {
+                is State.Successful -> {
                     state.data?.let { weatherData -> setSuccessState(weatherData) }
                 }
             }
@@ -98,7 +99,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun setSuccessState(weatherData: WeatherResponse) {
-        Log.i("TAG", "update ui views: ")
+        Log.i(TAG, "update ui views: ")
         binding.apply {
             //progressBar.visibility = View.GONE
             progressTxt.text = getString(R.string.update_success)
@@ -126,12 +127,21 @@ class HomeFragment : Fragment() {
             cloudsValueTxtV.text = weatherData.current.clouds.toString() + "%"
             sunriseValueTxtV.text = "${sunrise[Constants.TIME_KEY]} ${sunrise[Constants.AM_PM_KEY]}"
             sunsetValueTxtV.text = "${sunset[Constants.TIME_KEY]} ${sunset[Constants.AM_PM_KEY]}"
-            hourlyAdapter.submitList(weatherData.hourly)
+            hourlyAdapter.submitList(weatherData.hourly.take(25))
+            val layoutAnimationController = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_slide)
+            binding.hourlyRecyclerV.apply {
+                visibility = View.VISIBLE
+                layoutAnimation = layoutAnimationController
+                scheduleLayoutAnimation()
+            }
             dailyAdapter.submitList(weatherData.daily)
-
-            //homeSwipeRefresh.isRefreshing = false
             homeScrollView.visibility = View.VISIBLE
             progressTxt.visibility = View.GONE
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "onDestroy: ")
     }
 }

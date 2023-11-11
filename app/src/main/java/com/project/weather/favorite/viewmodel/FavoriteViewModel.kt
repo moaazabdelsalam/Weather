@@ -1,6 +1,5 @@
 package com.project.weather.favorite.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.weather.SharedViewModel
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class FavoriteViewModel(
     private val repo: RepoInterface,
@@ -28,23 +28,15 @@ class FavoriteViewModel(
         get() = _favoriteList
 
     init {
-        getFavoriteLocations()
-
-        viewModelScope.launch(Dispatchers.IO) {
-            sharedViewModel.locationToBeAddedToFav.collectLatest {
-                it?.let {
-                    val result = repo.getWeatherDataAndAddToFavorite(it.latitude, it.longitude)
-                    Log.i(TAG, "adding to favorite location: $result")
-                    _addToFavoriteState.value = result
-                }
-            }
-        }
+        getAllFavorite()
     }
 
-    private fun getFavoriteLocations() {
+    private fun getAllFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getAllFavoriteLocations().collectLatest {
-                _favoriteList.value = it
+                withContext(Dispatchers.Main) {
+                    _favoriteList.value = it
+                }
             }
         }
     }

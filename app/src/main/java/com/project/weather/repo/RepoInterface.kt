@@ -1,16 +1,17 @@
 package com.project.weather.repo
 
-import com.project.weather.model.ApiState
+import com.project.weather.model.State
 import com.project.weather.model.FavoriteLocation
 import kotlinx.coroutines.flow.Flow
 
 interface RepoInterface {
-    suspend fun getWeatherDataOfLocation(
+    suspend fun getWeatherDataOfHomeLocation(
         latitude: Double,
         longitude: Double
-    ): Flow<ApiState>
+    ): Flow<State>
 
-    suspend fun getWeatherDataAndAddToFavorite(latitude: Double, longitude: Double): Long
+    suspend fun getWeatherData(latitude: Double, longitude: Double): Flow<State>
+
     suspend fun addToFavorite(location: FavoriteLocation): Long
 
     suspend fun deleteFromFavorite(location: FavoriteLocation): Int
