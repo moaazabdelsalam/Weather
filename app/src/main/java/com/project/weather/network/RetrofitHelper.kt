@@ -11,18 +11,25 @@ object RetrofitHelper {
         level = HttpLoggingInterceptor.Level.BODY
     }
     private val client: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(MyInterceptor())
+        .addInterceptor(WeatherInterceptor())
         //.addInterceptor(logInterceptor)
         .build()
-    val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl(Constants.BASE_URL)
+    val weatherRetrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(Constants.OWM_BASE_URL)
         .client(client)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    val nominationRetrofit: Retrofit = Retrofit.Builder()
+        .baseUrl(Constants.NOMINATION_BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 }
 
 object API {
-    val retrofitService: WeatherService by lazy {
-        RetrofitHelper.retrofit.create(WeatherService::class.java)
+    val weatherService: WeatherService by lazy {
+        RetrofitHelper.weatherRetrofit.create(WeatherService::class.java)
+    }
+    val nominationService: NominationService by lazy {
+        RetrofitHelper.nominationRetrofit.create(NominationService::class.java)
     }
 }

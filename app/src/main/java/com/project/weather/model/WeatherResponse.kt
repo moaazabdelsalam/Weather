@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class WeatherResponse(
     val lat: Double,
     val lon: Double,
-    val timezone: String,
+    var timezone: String,
     @SerializedName("timezone_offset")
     val timezoneOffset: Long,
     val current: Current,

@@ -15,12 +15,19 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
 import com.google.android.gms.location.*
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.ActivityMainBinding
+import com.project.weather.repo.PreferenceRepo
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import org.osmdroid.util.GeoPoint
 
 
 const val LOCATION_PERMISSION_ID = 74
@@ -53,11 +60,35 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        sharedViewModel = ViewModelProvider(this)[SharedViewModel::class.java]
+        sharedViewModel = ViewModelProvider(
+            this,
+            SharedViewModelFactory(PreferenceRepo.getInstance(this))
+        )[SharedViewModel::class.java]
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         geocoder = Geocoder(this)
 
-        getLocation()
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                sharedViewModel.homeLocationSource.collectLatest { source ->
+                    when (source) {
+                        Constants.PREF_LOCATION_GPS -> {
+                            Log.i(TAG, "location source: GPS")
+                            getLocation()
+                        }
+
+                        Constants.PREF_LOCATION_MAP -> {
+                            Log.i(TAG, "location source: MAP")
+                            sharedViewModel.setHomeLocation(null)
+                        }
+
+                        else -> {
+                            Log.i(TAG, "no location source")
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
     private val locationCallback: LocationCallback = object : LocationCallback() {
@@ -73,8 +104,10 @@ class MainActivity : AppCompatActivity() {
                         "onLocationResult: ${addressList[0].latitude}, ${addressList[0].longitude}"
                     )
                     sharedViewModel.setHomeLocation(
-                        addressList[0].latitude,
-                        addressList[0].longitude
+                        GeoPoint(
+                            addressList[0].latitude,
+                            addressList[0].longitude
+                        )
                     )
                 }
             }

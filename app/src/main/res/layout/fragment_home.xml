@@ -8,14 +8,6 @@
     android:scrollbars="none"
     tools:context=".home.view.HomeFragment">
 
-    <!-- <ProgressBar
-         android:id="@+id/progressBar"
-         android:layout_width="wrap_content"
-         android:layout_height="0dp"
-         app:layout_constraintBottom_toBottomOf="@id/progressTxt"
-         app:layout_constraintStart_toEndOf="@id/progressTxt"
-         app:layout_constraintTop_toTopOf="@id/progressTxt" />-->
-
     <TextView
         android:id="@+id/cityNameTxtV"
         android:layout_width="wrap_content"
@@ -386,4 +378,14 @@
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/changeMapLocationBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/location_pin"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

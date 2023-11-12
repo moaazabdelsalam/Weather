@@ -6,14 +6,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.project.weather.R
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.DailyItemBinding
 import com.project.weather.model.Daily
 import com.project.weather.utils.getDateAndTime
-import com.project.weather.utils.getIconDrawableId
+import com.project.weather.utils.getIconLink
 
-class DailyAdapter : ListAdapter<Daily, DailyAdapter.DailyViewHolder>(DailyDiffUtil()) {
+class DailyAdapter(private val context: Context) :
+    ListAdapter<Daily, DailyAdapter.DailyViewHolder>(DailyDiffUtil()) {
     private lateinit var binding: DailyItemBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyViewHolder {
@@ -30,7 +32,11 @@ class DailyAdapter : ListAdapter<Daily, DailyAdapter.DailyViewHolder>(DailyDiffU
         holder.binding.apply {
             dailyDateTxtV.text =
                 "${date[Constants.DAY_OF_WEEK_KEY]}, ${date[Constants.MONTH_KEY]} ${date[Constants.DAY_OF_MONTH_KEY]}"
-            dailyWeatherIcon.setImageResource(getIconDrawableId(daily.weather[0].icon))
+            //dailyWeatherIcon.setImageResource(getIconDrawableId(daily.weather[0].icon))
+            Glide.with(context)
+                .load(getIconLink(daily.weather[0].icon))
+                .placeholder(R.drawable.weather_icon_placeholder)
+                .into(dailyWeatherIcon)
             dailyWeatherDescriptionTxtV.text = daily.weather[0].main
             dailyMaxTempTxtV.text = daily.temp.max.toInt().toString()
             dailyMinTempTxtV.text = daily.temp.min.toInt().toString()

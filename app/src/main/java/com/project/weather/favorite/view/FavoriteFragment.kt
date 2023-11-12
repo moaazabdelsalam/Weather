@@ -46,7 +46,9 @@ class FavoriteFragment : Fragment() {
         init()
 
         binding.openMapBtn.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_favoriteFragment_to_mapFragment)
+            val action = FavoriteFragmentDirections.actionFavoriteFragmentToMapFragment()
+            action.source = "favorite"
+            Navigation.findNavController(view).navigate(action)
         }
 
         collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) {
@@ -73,9 +75,14 @@ class FavoriteFragment : Fragment() {
         )
         favoriteViewModel =
             ViewModelProvider(this, favoriteViewModelFactory)[FavoriteViewModel::class.java]
-        favoriteAdapter = FavoriteAdapter()
+        favoriteAdapter = FavoriteAdapter(requireContext())
         binding.favoriteRecyclerV.adapter = favoriteAdapter
-
+        binding.openMapBtn.startAnimation(
+            AnimationUtils.loadAnimation(
+                requireContext(),
+                R.anim.from_bottom
+            )
+        )
     }
 
     private fun attachSwipeToDeleteToRV() {
@@ -93,7 +100,7 @@ class FavoriteFragment : Fragment() {
 
                 MaterialAlertDialogBuilder(requireContext())
                     .setTitle("Remove from favorite")
-                    .setMessage("Sure you want to remove ${deletedLocation.timezone} from favorite?")
+                    .setMessage("Sure you want to remove ${deletedLocation.cityName} from favorite?")
                     .setNegativeButton("Cancel") { dialog, _ ->
                         dialog.dismiss()
                     }
@@ -103,7 +110,7 @@ class FavoriteFragment : Fragment() {
 
                         Snackbar.make(
                             binding.favoriteRecyclerV,
-                            "${deletedLocation.timezone} removed",
+                            "${deletedLocation.cityName} removed",
                             Snackbar.LENGTH_SHORT
                         )
                             .setAnchorView(R.id.bottomNav)

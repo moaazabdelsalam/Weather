@@ -1,5 +1,6 @@
 package com.project.weather.network
 
+import com.project.weather.model.ReverseNominationResponse
 import com.project.weather.model.WeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET

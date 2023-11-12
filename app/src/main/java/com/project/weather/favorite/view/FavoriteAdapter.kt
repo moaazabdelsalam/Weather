@@ -6,11 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.project.weather.R
 import com.project.weather.databinding.FavoriteItemBinding
 import com.project.weather.model.FavoriteLocation
-import com.project.weather.utils.getIconDrawableId
+import com.project.weather.utils.getIconLink
 
-class FavoriteAdapter :
+class FavoriteAdapter(private val context: Context) :
     ListAdapter<FavoriteLocation, FavoriteAdapter.FavoriteViewHolder>(FavoriteDiffUtil()) {
     private lateinit var binding: FavoriteItemBinding
 
@@ -25,8 +27,12 @@ class FavoriteAdapter :
     override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
         val favorite = getItem(position)
         holder.binding.apply {
-            favoriteWeatherIcon.setImageResource(getIconDrawableId(favorite.icon))
-            favoriteCityTxtV.text = favorite.timezone
+            //favoriteWeatherIcon.setImageResource(getIconDrawableId(favorite.icon))
+            Glide.with(context)
+                .load(getIconLink( favorite.icon))
+                .placeholder(R.drawable.weather_icon_placeholder)
+                .into(favoriteWeatherIcon)
+            favoriteCityTxtV.text = favorite.cityName
             favoriteWeatherDescriptionTxtV.text = favorite.main
             favoriteMaxTempTxtV.text = favorite.max.toInt().toString()
             favoriteMinTempTxtV.text = favorite.min.toInt().toString()

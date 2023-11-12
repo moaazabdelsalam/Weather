@@ -9,24 +9,37 @@
         android:id="@+id/homeFragment"
         android:name="com.project.weather.home.view.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_homeFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/favoriteFragment"
         android:name="com.project.weather.favorite.view.FavoriteFragment"
         android:label="fragment_favorite"
-        tools:layout="@layout/fragment_favorite" >
+        tools:layout="@layout/fragment_favorite">
         <action
             android:id="@+id/action_favoriteFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingFragment"
-        android:name="com.project.weather.setting.SettingFragment"
+        android:name="com.project.weather.setting.view.SettingFragment"
         android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" />
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.project.weather.map.MapFragment"
+        android:name="com.project.weather.map.view.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map">
+        <argument
+            android:name="source"
+            android:defaultValue="NAN"
+            app:argType="string" />
+    </fragment>
 </navigation>

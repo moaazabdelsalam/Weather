@@ -9,26 +9,29 @@ import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
+import com.bumptech.glide.Glide
 import com.project.weather.R
 import com.project.weather.SharedViewModel
+import com.project.weather.SharedViewModelFactory
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.FragmentHomeBinding
 import com.project.weather.home.viewmodel.HomeViewModel
+import com.project.weather.home.viewmodel.HomeViewModelFactory
 import com.project.weather.local.ConcreteLocalSource
 import com.project.weather.model.State
 import com.project.weather.model.WeatherResponse
 import com.project.weather.network.WeatherClient
+import com.project.weather.repo.PreferenceRepo
 import com.project.weather.repo.Repo
-import com.project.weather.utils.ViewModelFactory
 import com.project.weather.utils.collectLatestFlowOnLifecycle
 import com.project.weather.utils.getDateAndTime
-import com.project.weather.utils.getIconDrawableId
+import com.project.weather.utils.getIconLink
 
 class HomeFragment : Fragment() {
     private val TAG = "TAG HomeFragment"
     private lateinit var binding: FragmentHomeBinding
     private lateinit var homeViewModel: HomeViewModel
-    private lateinit var sharedViewModel: SharedViewModel
     private lateinit var hourlyAdapter: HourlyAdapter
     private lateinit var dailyAdapter: DailyAdapter
 
@@ -50,7 +53,7 @@ class HomeFragment : Fragment() {
             homeViewModel.getHomeWeatherData()
         }
 
-        collectLatestFlowOnLifecycle(homeViewModel.weatherDataStateFlow) { state ->
+        collectLatestFlowOnLifecycle(homeViewModel.weatherDataApiStateFlow) { state ->
             //Log.i(TAG, "weather state result $state")
             when (state) {
                 is State.Failure -> {
@@ -59,25 +62,51 @@ class HomeFragment : Fragment() {
 
                 is State.Loading -> setLoadingState()
 
-                is State.Successful -> {
+                is State.Success -> {
                     state.data?.let { weatherData -> setSuccessState(weatherData) }
                 }
             }
         }
+
+        collectLatestFlowOnLifecycle(homeViewModel.getHomeLocationSource()) { source ->
+            when (source) {
+                Constants.PREF_LOCATION_GPS -> {
+                    binding.changeMapLocationBtn.visibility = View.GONE
+                }
+
+                Constants.PREF_LOCATION_MAP -> {
+                    binding.changeMapLocationBtn.visibility = View.VISIBLE
+                    binding.changeMapLocationBtn.startAnimation(
+                        AnimationUtils.loadAnimation(
+                            requireContext(),
+                            R.anim.from_bottom
+                        )
+                    )
+                }
+
+                else -> {}
+            }
+        }
+
+        binding.changeMapLocationBtn.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_mapFragment)
+        }
     }
 
     private fun init() {
-        val viewModelFactory = ViewModelFactory(
+        val viewModelFactory = HomeViewModelFactory(
             Repo.getInstance(
                 WeatherClient,
                 ConcreteLocalSource.getInstance(requireContext())
             ),
-            ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+            ViewModelProvider(
+                requireActivity(),
+                SharedViewModelFactory(PreferenceRepo.getInstance(requireContext()))
+            )[SharedViewModel::class.java]
         )
         homeViewModel = ViewModelProvider(this, viewModelFactory)[HomeViewModel::class.java]
-        sharedViewModel = ViewModelProvider(requireActivity())[SharedViewModel::class.java]
-        hourlyAdapter = HourlyAdapter()
-        dailyAdapter = DailyAdapter()
+        hourlyAdapter = HourlyAdapter(requireContext())
+        dailyAdapter = DailyAdapter(requireContext())
         binding.hourlyRecyclerV.adapter = hourlyAdapter
         binding.dailyRecyclerV.adapter = dailyAdapter
         //binding.homeSwipeRefresh.isRefreshing = true
@@ -92,7 +121,6 @@ class HomeFragment : Fragment() {
 
     private fun setFailureState(error: String) {
         binding.apply {
-            //progressBar.visibility = View.GONE
             progressTxt.text = getString(R.string.update_failed)
         }
         Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
@@ -101,7 +129,6 @@ class HomeFragment : Fragment() {
     private fun setSuccessState(weatherData: WeatherResponse) {
         Log.i(TAG, "update ui views: ")
         binding.apply {
-            //progressBar.visibility = View.GONE
             progressTxt.text = getString(R.string.update_success)
             setDataOnViews(weatherData)
         }
@@ -112,11 +139,14 @@ class HomeFragment : Fragment() {
         val sunrise = getDateAndTime(weatherData.current.sunrise)
         val sunset = getDateAndTime(weatherData.current.sunset)
         binding.apply {
-            cityNameTxtV.text = weatherData.timezone.split("/")[1]
+            cityNameTxtV.text = weatherData.timezone/*.split("/")[1]*/
             dateTxtV.text =
                 "${currentDate[Constants.DAY_OF_WEEK_KEY]}, ${currentDate[Constants.MONTH_KEY]} ${currentDate[Constants.DAY_OF_MONTH_KEY]}, ${currentDate[Constants.YEAR_KEY]}"
             timeTxtV.text = "${currentDate[Constants.TIME_KEY]} ${currentDate[Constants.AM_PM_KEY]}"
-            currentWeatherIcon.setImageResource(getIconDrawableId(weatherData.current.weather[0].icon))
+            Glide.with(requireContext())
+                .load(getIconLink(weatherData.current.weather[0].icon))
+                .placeholder(R.drawable.weather_icon_placeholder)
+                .into(currentWeatherIcon)
             currentWeatherDescriptionTxtV.text = weatherData.current.weather[0].description
             currentTempTxtV.text = weatherData.current.temp.toInt().toString()
             currentFeelsLikeTxt.text =
@@ -128,7 +158,8 @@ class HomeFragment : Fragment() {
             sunriseValueTxtV.text = "${sunrise[Constants.TIME_KEY]} ${sunrise[Constants.AM_PM_KEY]}"
             sunsetValueTxtV.text = "${sunset[Constants.TIME_KEY]} ${sunset[Constants.AM_PM_KEY]}"
             hourlyAdapter.submitList(weatherData.hourly.take(25))
-            val layoutAnimationController = AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_slide)
+            val layoutAnimationController =
+                AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation_slide)
             binding.hourlyRecyclerV.apply {
                 visibility = View.VISIBLE
                 layoutAnimation = layoutAnimationController
