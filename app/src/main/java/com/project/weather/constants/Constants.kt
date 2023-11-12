@@ -12,6 +12,6 @@ object Constants {
     const val TIME_KEY = "time"
     const val AM_PM_KEY = "am/pm"
     const val PREF_LOCATION_SOURCE = "home location source"
-    const val PREF_LOCATION_GPS = "home location gps"
-    const val PREF_LOCATION_MAP = "home location map"
+    const val PREF_LOCATION_GPS = "GPS"
+    const val PREF_LOCATION_MAP = "MAP"
 }

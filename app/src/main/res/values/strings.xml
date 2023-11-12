@@ -17,4 +17,10 @@
     <string name="updating">updating...</string>
     <string name="update_failed">update failed</string>
     <string name="update_success">update success</string>
+    <string name="location_source">Location Source</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="speed_unit">Speed Unit</string>
+    <string name="temp_unit">Temperature unit</string>
+    <string name="language">Language\n</string>
 </resources>
