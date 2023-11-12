@@ -39,6 +39,18 @@ fun getDateAndTime(s: Long): Map<String, String> {
     )
 }
 
+fun celsiusToKelvin(celsius: Double): Double {
+    return String.format("%.2f", (celsius + 273.15)).toDouble()
+}
+
+fun celsiusToFahrenheit(celsius: Double): Double {
+    return String.format("%.2f", ((celsius * 9 / 5) + 32)).toDouble()
+}
+
+fun metersPerSecondToMilesPerHour(metersPerSecond: Double): Double {
+    return String.format("%.2f", (metersPerSecond * 2.23694)).toDouble()
+}
+
 fun convertWeatherToFavorite(weatherResponse: WeatherResponse, cityName: String): FavoriteLocation {
     return FavoriteLocation(
         weatherResponse.lat,

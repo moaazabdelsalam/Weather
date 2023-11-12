@@ -3,10 +3,11 @@ package com.project.weather.repo
 import android.content.Context
 import android.util.Log
 import com.project.weather.constants.Constants
+import com.yariksoffice.lingver.Lingver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-class PreferenceRepo private constructor(context: Context) : PreferenceRepoInterface {
+class PreferenceRepo private constructor(val context: Context) : PreferenceRepoInterface {
     private val TAG = "TAG PrefRepo"
 
     private val sharedPreference =
@@ -17,6 +18,14 @@ class PreferenceRepo private constructor(context: Context) : PreferenceRepoInter
         MutableStateFlow(getHomeLocationSource())
     override val homeLocationSourceValue: StateFlow<String?>
         get() = _homeLocationSourceValue
+    private val _temperatureUnitValue: MutableStateFlow<String?> =
+        MutableStateFlow(getTemperatureUnit())
+    override val temperatureUnitValue: StateFlow<String?>
+        get() = _temperatureUnitValue
+    private val _speedUnitValue: MutableStateFlow<String?> =
+        MutableStateFlow(getSpeedUnit())
+    override val speedUnitValue: StateFlow<String?>
+        get() = _speedUnitValue
 
     companion object {
         @Volatile
@@ -30,6 +39,15 @@ class PreferenceRepo private constructor(context: Context) : PreferenceRepoInter
         }
     }
 
+    private fun getHomeLocationSource() =
+        sharedPreference.getString(Constants.PREF_LOCATION_SOURCE, Constants.PREF_LOCATION_GPS)
+
+    private fun getTemperatureUnit() =
+        sharedPreference.getString(Constants.PREF_TEMP_UNIT, Constants.PREF_TEMP_C)
+
+    private fun getSpeedUnit() =
+        sharedPreference.getString(Constants.PREF_SPEED_UNIT, Constants.PREF_SPEED_METER)
+
     override fun setHomeLocationSource(source: String) {
         editor.putString(Constants.PREF_LOCATION_SOURCE, source)
         if (editor.commit())
@@ -38,6 +56,23 @@ class PreferenceRepo private constructor(context: Context) : PreferenceRepoInter
             Log.i(TAG, "setHomeLocationSource: error")
     }
 
-    private fun getHomeLocationSource() =
-        sharedPreference.getString(Constants.PREF_LOCATION_SOURCE, null)
+    override fun setLanguage(language: String) {
+        Lingver.getInstance().setLocale(context, language)
+    }
+
+    override fun setTemperatureUnit(unit: String) {
+        editor.putString(Constants.PREF_TEMP_UNIT, unit)
+        if (editor.commit())
+            _temperatureUnitValue.value = unit
+        else
+            Log.i(TAG, "setTemperatureUnit: error")
+    }
+
+    override fun setSpeedUnit(unit: String) {
+        editor.putString(Constants.PREF_SPEED_UNIT, unit)
+        if (editor.commit())
+            _speedUnitValue.value = unit
+        else
+            Log.i(TAG, "setSpeedUnit: error")
+    }
 }

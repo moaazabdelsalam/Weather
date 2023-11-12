@@ -8,7 +8,6 @@ import com.project.weather.model.State
 import com.project.weather.model.WeatherResponse
 import com.project.weather.network.RemoteSource
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -42,13 +41,14 @@ class Repo private constructor(
 
     init {
         GlobalScope.launch {
-            _homeDataApiState.collect {state ->
-                if (state is State.Success){
+            _homeDataApiState.collect { state ->
+                if (state is State.Success) {
                     localSource.cacheWeatherData(state.data)
                 }
             }
         }
     }
+
     override suspend fun getWeatherDataOfHomeLocation(
         latitude: Double,
         longitude: Double
@@ -144,7 +144,8 @@ class Repo private constructor(
     private suspend fun setCityName(weatherResponse: WeatherResponse) {
         getCityName(weatherResponse.lat, weatherResponse.lon).collectLatest {
             if (it is State.Success && it.data != null) {
-                weatherResponse.timezone = it.data.namedetails.nameEn
+                weatherResponse.nameAr = it.data.namedetails.nameAr
+                weatherResponse.nameEn = it.data.namedetails.nameEn
                 _homeDataApiState.emit(State.Success(weatherResponse))
             }
         }

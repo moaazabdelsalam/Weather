@@ -11,12 +11,16 @@ import com.project.weather.R
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.DailyItemBinding
 import com.project.weather.model.Daily
+import com.project.weather.utils.celsiusToFahrenheit
+import com.project.weather.utils.celsiusToKelvin
 import com.project.weather.utils.getDateAndTime
 import com.project.weather.utils.getIconLink
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class DailyAdapter(private val context: Context) :
     ListAdapter<Daily, DailyAdapter.DailyViewHolder>(DailyDiffUtil()) {
     private lateinit var binding: DailyItemBinding
+    val tempUnit: MutableStateFlow<String?> = MutableStateFlow(null)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DailyViewHolder {
         val inflater: LayoutInflater = parent
@@ -32,14 +36,30 @@ class DailyAdapter(private val context: Context) :
         holder.binding.apply {
             dailyDateTxtV.text =
                 "${date[Constants.DAY_OF_WEEK_KEY]}, ${date[Constants.MONTH_KEY]} ${date[Constants.DAY_OF_MONTH_KEY]}"
-            //dailyWeatherIcon.setImageResource(getIconDrawableId(daily.weather[0].icon))
             Glide.with(context)
                 .load(getIconLink(daily.weather[0].icon))
                 .placeholder(R.drawable.weather_icon_placeholder)
                 .into(dailyWeatherIcon)
-            dailyWeatherDescriptionTxtV.text = daily.weather[0].main
-            dailyMaxTempTxtV.text = daily.temp.max.toInt().toString()
-            dailyMinTempTxtV.text = daily.temp.min.toInt().toString()
+            dailyWeatherDescriptionTxtV.text = daily.weather[0].description
+            when (tempUnit.value) {
+                Constants.PREF_TEMP_C -> {
+                    dailyTempUnitTxtV.text = context.resources.getString(R.string.celsius)
+                    dailyMaxTempTxtV.text = daily.temp.max.toInt().toString()
+                    dailyMinTempTxtV.text = daily.temp.min.toInt().toString()
+                }
+
+                Constants.PREF_TEMP_K -> {
+                    dailyTempUnitTxtV.text = context.resources.getString(R.string.kelvin)
+                    dailyMaxTempTxtV.text = celsiusToKelvin(daily.temp.max).toString()
+                    dailyMinTempTxtV.text = celsiusToKelvin(daily.temp.min).toString()
+                }
+
+                Constants.PREF_TEMP_F -> {
+                    dailyTempUnitTxtV.text = context.resources.getString(R.string.fahrenheit)
+                    dailyMaxTempTxtV.text = celsiusToFahrenheit(daily.temp.max).toString()
+                    dailyMinTempTxtV.text = celsiusToFahrenheit(daily.temp.min).toString()
+                }
+            }
         }
     }
 

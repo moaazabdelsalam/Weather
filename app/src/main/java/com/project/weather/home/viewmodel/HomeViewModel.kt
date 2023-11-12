@@ -46,4 +46,8 @@ class HomeViewModel(private val repo: RepoInterface, private val sharedViewModel
     }
 
     fun getHomeLocationSource() = sharedViewModel.homeLocationSource
+
+    fun getTemperatureUnit() = sharedViewModel.temperatureUnitValue
+
+    fun getSpeedUnit() = sharedViewModel.speedUnitValue
 }

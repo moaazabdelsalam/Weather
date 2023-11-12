@@ -10,5 +10,7 @@ data class WeatherResponse(
     val timezoneOffset: Long,
     val current: Current,
     val hourly: List<Hourly>,
-    val daily: List<Daily>
+    val daily: List<Daily>,
+    var nameAr: String,
+    var nameEn: String
 ) : java.io.Serializable

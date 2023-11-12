@@ -3,7 +3,6 @@ package com.project.weather
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.project.weather.repo.PreferenceRepo
 import com.project.weather.repo.PreferenceRepoInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +18,14 @@ class SharedViewModel(private val preferenceRepo: PreferenceRepoInterface) : Vie
         MutableStateFlow(null)
     val homeLocationSource: StateFlow<String?>
         get() = _homeLocationSource
-
+    private val _temperatureUnitValue: MutableStateFlow<String?> =
+        MutableStateFlow(null)
+    val temperatureUnitValue: StateFlow<String?>
+        get() = _temperatureUnitValue
+    private val _speedUnitValue: MutableStateFlow<String?> =
+        MutableStateFlow(null)
+    val speedUnitValue: StateFlow<String?>
+        get() = _speedUnitValue
     private val _homeLocation: MutableStateFlow<GeoPoint?> =
         MutableStateFlow(null)
     val homeLocation: StateFlow<GeoPoint?>
@@ -32,6 +38,18 @@ class SharedViewModel(private val preferenceRepo: PreferenceRepoInterface) : Vie
                 _homeLocationSource.value = it
             }
         }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            preferenceRepo.temperatureUnitValue.collectLatest {
+                _temperatureUnitValue.value = it
+            }
+        }
+
+        viewModelScope.launch(Dispatchers.IO) {
+            preferenceRepo.speedUnitValue.collectLatest {
+                _speedUnitValue.value = it
+            }
+        }
     }
 
     fun setHomeLocationSource(source: String) {
@@ -42,5 +60,17 @@ class SharedViewModel(private val preferenceRepo: PreferenceRepoInterface) : Vie
     fun setHomeLocation(geoPoint: GeoPoint?) {
         _homeLocation.value = geoPoint
         Log.i(TAG, "setHomeLocation: ${geoPoint?.latitude}, ${geoPoint?.longitude}")
+    }
+
+    fun setLanguage(language: String) {
+        preferenceRepo.setLanguage(language)
+    }
+
+    fun setTemperatureUnit(unit: String) {
+        preferenceRepo.setTemperatureUnit(unit)
+    }
+
+    fun setSpeedUnit(unit: String) {
+        preferenceRepo.setSpeedUnit(unit)
     }
 }

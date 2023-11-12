@@ -1,26 +1,32 @@
 <resources>
     <string name="app_name">Weather</string>
     <string name="humidity">Humidity</string>
+    <string name="humidity_unit">%</string>
     <string name="wind_speed">Wind Speed</string>
+    <string name="wind_speed_unit_meter">m/s</string>
+    <string name="wind_speed_unit_mile">mph</string>
     <string name="sunrise">Sunrise</string>
     <string name="winds">Winds</string>
     <string name="sunset">Sunset</string>
     <string name="pressure">Pressure</string>
-    <string name="today">Today</string>
+    <string name="pressure_unit">hPa</string>
+    <string name="today">Next 24 hours</string>
     <string name="next_7_days">Next 7 days</string>
     <string name="celsius">\u2103</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="kelvin">\u212A</string>
+    <string name="fahrenheit">\u2109</string>
     <string name="home">Home</string>
     <string name="favorite">Favorite</string>
     <string name="setting">Setting</string>
-    <string name="updating">updating...</string>
+    <string name="updating">updating…</string>
     <string name="update_failed">update failed</string>
     <string name="update_success">update success</string>
     <string name="location_source">Location Source</string>
     <string name="cancel">Cancel</string>
-    <string name="ok">Ok</string>
-    <string name="speed_unit">Speed Unit</string>
+    <string name="ok">OK</string>
+    <string name="speed_unit">Speed unit</string>
     <string name="temp_unit">Temperature unit</string>
-    <string name="language">Language\n</string>
+    <string name="language">Language</string>
+    <string name="feels_like">Feels like </string>
+    <string name="clouds">Clouds</string>
 </resources>

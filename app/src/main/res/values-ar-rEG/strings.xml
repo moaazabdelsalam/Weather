@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">Weather</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="humidity_unit">%</string>
+    <string name="wind_speed">سرعه الرياح</string>
+    <string name="wind_speed_unit_meter">م/ث</string>
+    <string name="wind_speed_unit_mile">ميل/س</string>
+    <string name="sunrise">الشروق</string>
+    <string name="winds">الرياح</string>
+    <string name="sunset">الغروب</string>
+    <string name="pressure">الضغط</string>
+    <string name="pressure_unit">هيك.باسك.</string>
+    <string name="today">24 ساعة قادمة</string>
+    <string name="next_7_days">7 ايام قادمه</string>
+    <string name="celsius">\u2103</string>
+    <string name="kelvin">\u212A</string>
+    <string name="fahrenheit">\u2109</string>
+    <string name="home">الرئيسيه</string>
+    <string name="favorite">المفضلة</string>
+    <string name="setting">الاعدادات</string>
+    <string name="updating">جار التحديث…</string>
+    <string name="update_failed">فشل التحديث</string>
+    <string name="update_success">نجح التحديث</string>
+    <string name="location_source">مصدر الموقع</string>
+    <string name="cancel">الغاء</string>
+    <string name="ok">نعم</string>
+    <string name="speed_unit">وحده السرعة</string>
+    <string name="temp_unit">وحده درجه الحراره</string>
+    <string name="language">اللغه</string>
+    <string name="feels_like">تبدو</string>
+    <string name="clouds">السحاب</string>
+</resources>

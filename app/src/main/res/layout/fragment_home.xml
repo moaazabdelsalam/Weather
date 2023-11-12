@@ -54,6 +54,7 @@
         android:id="@+id/homeSwipeRefresh"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/timeTxtV">
 
@@ -81,6 +82,7 @@
                     android:id="@+id/currentWeatherDescriptionTxtV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="@id/currentWeatherIcon"
                     app:layout_constraintStart_toStartOf="@id/currentWeatherIcon"
@@ -89,10 +91,11 @@
 
                 <TextView
                     android:id="@+id/currentTempTxtV"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="0dp"
-                    android:gravity="center"
+                    android:gravity="center|end"
                     android:textSize="75sp"
+                    app:layout_constraintStart_toEndOf="@id/currentWeatherIcon"
                     app:layout_constraintBottom_toBottomOf="@id/currentWeatherIcon"
                     app:layout_constraintEnd_toStartOf="@id/currentTempUnitTxtV"
                     app:layout_constraintTop_toTopOf="@id/currentWeatherIcon"
@@ -109,14 +112,24 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/currentWeatherIcon" />
 
+
                 <TextView
                     android:id="@+id/currentFeelsLikeTxt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/feels_like"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toStartOf="@id/currentFeelsLikeValueTxt"
+                    app:layout_constraintTop_toBottomOf="@id/currentTempTxtV" />
+
+                <TextView
+                    android:id="@+id/currentFeelsLikeValueTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     app:layout_constraintEnd_toStartOf="@id/fellsLikeTempUnitTxtV"
                     app:layout_constraintTop_toBottomOf="@id/currentTempTxtV"
-                    tools:text="Feels like 32" />
+                    tools:text="32" />
 
                 <TextView
                     android:id="@+id/fellsLikeTempUnitTxtV"
@@ -151,11 +164,25 @@
                             app:layout_constraintGuide_percent="0.3" />
 
                         <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/guideline4"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintGuide_percent="0.5" />
+
+                        <androidx.constraintlayout.widget.Guideline
                             android:id="@+id/guideline1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
                             app:layout_constraintGuide_percent="0.7" />
+
+                        <androidx.constraintlayout.widget.Guideline
+                            android:id="@+id/guideline5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            app:layout_constraintGuide_percent="0.85" />
 
                         <ImageView
                             android:id="@+id/humidityIC"
@@ -170,10 +197,17 @@
                             android:id="@+id/humidityValueTxtV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:layout_constraintEnd_toEndOf="@id/humidityIC"
                             app:layout_constraintStart_toStartOf="@id/humidityIC"
                             app:layout_constraintTop_toBottomOf="@id/humidityIC"
                             tools:text="68" />
+
+                        <TextView
+                            android:id="@+id/humidityUnitTxtV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/humidity_unit"
+                            app:layout_constraintStart_toEndOf="@id/humidityValueTxtV"
+                            app:layout_constraintTop_toBottomOf="@id/humidityIC" />
 
                         <TextView
                             android:id="@+id/humidityTxtV"
@@ -198,10 +232,17 @@
                             android:id="@+id/windSpeedValueTxtV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:layout_constraintEnd_toEndOf="@id/windSpeedIC"
-                            app:layout_constraintStart_toStartOf="@id/windSpeedIC"
+                            app:layout_constraintEnd_toStartOf="@id/guideline4"
                             app:layout_constraintTop_toBottomOf="@id/windSpeedIC"
                             tools:text="8" />
+
+                        <TextView
+                            android:id="@+id/windSpeedUnitTxtV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/wind_speed_unit_meter"
+                            app:layout_constraintStart_toEndOf="@id/guideline4"
+                            app:layout_constraintTop_toBottomOf="@id/windSpeedIC" />
 
                         <TextView
                             android:id="@+id/windSpeedTxtV"
@@ -226,10 +267,17 @@
                             android:id="@+id/pressureValueTxtV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:layout_constraintEnd_toEndOf="@id/pressureIC"
-                            app:layout_constraintStart_toStartOf="@id/pressureIC"
+                            app:layout_constraintEnd_toStartOf="@id/guideline5"
                             app:layout_constraintTop_toBottomOf="@id/pressureIC"
                             tools:text="800" />
+
+                        <TextView
+                            android:id="@+id/pressureUnitTxtV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/pressure_unit"
+                            app:layout_constraintStart_toEndOf="@id/guideline5"
+                            app:layout_constraintTop_toBottomOf="@id/pressureIC" />
 
                         <TextView
                             android:id="@+id/pressureTxtV"
@@ -255,16 +303,23 @@
                             android:id="@+id/cloudsValueTxtV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:layout_constraintEnd_toEndOf="@id/cloudsIC"
                             app:layout_constraintStart_toStartOf="@id/cloudsIC"
                             app:layout_constraintTop_toBottomOf="@id/cloudsIC"
                             tools:text="800" />
 
                         <TextView
+                            android:id="@+id/cloudsUnitTxtV"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/humidity_unit"
+                            app:layout_constraintStart_toEndOf="@id/cloudsValueTxtV"
+                            app:layout_constraintTop_toBottomOf="@id/cloudsIC" />
+
+                        <TextView
                             android:id="@+id/cloudsTxtV"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/winds"
+                            android:text="@string/clouds"
                             app:layout_constraintEnd_toEndOf="@id/cloudsIC"
                             app:layout_constraintStart_toStartOf="@id/cloudsIC"
                             app:layout_constraintTop_toBottomOf="@id/cloudsValueTxtV" />
