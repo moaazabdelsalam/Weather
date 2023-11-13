@@ -27,7 +27,6 @@ class FavoriteAdapter(private val context: Context) :
     override fun onBindViewHolder(holder: FavoriteViewHolder, position: Int) {
         val favorite = getItem(position)
         holder.binding.apply {
-            //favoriteWeatherIcon.setImageResource(getIconDrawableId(favorite.icon))
             Glide.with(context)
                 .load(getIconLink( favorite.icon))
                 .placeholder(R.drawable.weather_icon_placeholder)

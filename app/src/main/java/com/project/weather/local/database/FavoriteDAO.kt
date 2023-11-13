@@ -5,6 +5,8 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
+import com.project.weather.model.AlertItem
 import com.project.weather.model.FavoriteLocation
 import kotlinx.coroutines.flow.Flow
 
@@ -19,4 +21,7 @@ interface FavoriteDAO {
 
     @Query("SELECT * FROM favorite_table")
     fun getAllFavoriteLocations(): Flow<List<FavoriteLocation>>
+
+    @Update
+    suspend fun updateAlert(location: FavoriteLocation)
 }

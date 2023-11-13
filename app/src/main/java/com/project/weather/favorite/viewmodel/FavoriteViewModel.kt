@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.weather.SharedViewModel
 import com.project.weather.model.FavoriteLocation
+import com.project.weather.model.State
 import com.project.weather.repo.RepoInterface
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,8 +24,9 @@ class FavoriteViewModel(
     val addToFavoriteState: StateFlow<Long?>
         get() = _addToFavoriteState
 
-    private var _favoriteList: MutableStateFlow<List<FavoriteLocation>> = MutableStateFlow(listOf())
-    val favoriteList: StateFlow<List<FavoriteLocation>>
+    private var _favoriteList: MutableStateFlow<State<List<FavoriteLocation>>> =
+        MutableStateFlow(State.Loading)
+    val favoriteList: StateFlow<State<List<FavoriteLocation>>>
         get() = _favoriteList
 
     init {
@@ -33,9 +35,12 @@ class FavoriteViewModel(
 
     private fun getAllFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getAllFavoriteLocations().collectLatest {
+            repo.getAllFavoriteLocations().collectLatest {list ->
                 withContext(Dispatchers.Main) {
-                    _favoriteList.value = it
+                    if (list.isEmpty())
+                        _favoriteList.value = State.Failure("No Data Found...")
+                    else
+                        _favoriteList.value = State.Success(list)
                 }
             }
         }
@@ -44,6 +49,22 @@ class FavoriteViewModel(
     fun deleteLocationFromFavorite(location: FavoriteLocation) {
         viewModelScope.launch(Dispatchers.IO) {
             repo.deleteFromFavorite(location)
+        }
+    }
+
+    fun addAlert(location: FavoriteLocation, time: String) {
+        location.isScheduled = true
+        location.timeString = time
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.updateAlert(location)
+        }
+    }
+
+    fun dismissAlert(location: FavoriteLocation) {
+        location.isScheduled = false
+        location.timeString = ""
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.updateAlert(location)
         }
     }
 }

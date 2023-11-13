@@ -1,8 +1,6 @@
 package com.project.weather.model
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
-import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = "favorite_table", primaryKeys = ["lat", "lon"])
 data class FavoriteLocation(
@@ -14,4 +12,6 @@ data class FavoriteLocation(
     var icon: String,
     var min: Double,
     var max: Double,
+    var timeString: String = "",
+    var isScheduled: Boolean = false
 )

@@ -4,10 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.project.weather.model.AlertItem
 import com.project.weather.model.FavoriteLocation
 
 @Database(entities = [FavoriteLocation::class], version = 1, exportSchema = false)
-abstract class FavoriteDatabase : RoomDatabase(){
+abstract class FavoriteDatabase : RoomDatabase() {
     abstract fun getFavoriteDao(): FavoriteDAO
 
     companion object {

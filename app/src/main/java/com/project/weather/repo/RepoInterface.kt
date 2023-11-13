@@ -35,4 +35,6 @@ interface RepoInterface {
     suspend fun deleteFromFavorite(location: FavoriteLocation): Int
 
     fun getAllFavoriteLocations(): Flow<List<FavoriteLocation>>
+
+    suspend fun updateAlert(location: FavoriteLocation)
 }

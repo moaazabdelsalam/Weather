@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Date
 import java.util.Locale
 
@@ -64,28 +65,31 @@ fun convertWeatherToFavorite(weatherResponse: WeatherResponse, cityName: String)
     )
 }
 
+fun convertLocalDateTimeToString(time: LocalDateTime)
+    = "${time.dayOfMonth}/${time.month.toString().take(3)}, ${time.hour}:${time.minute}"
+
 /*fun getIconDrawableId(icon: String) =
-    when (icon) {
-        "01d" -> R.drawable.clear_d
-        "01n" -> R.drawable.clear_n
-        "02d" -> R.drawable.few_clouds_d
-        "02n" -> R.drawable.few_clouds_n
-        "03d" -> R.drawable.scattered_clouds_d
-        "03n" -> R.drawable.scattered_clouds_n
-        "04d" -> R.drawable.broken_clouds_d
-        "04n" -> R.drawable.broken_clouds_n
-        "09d" -> R.drawable.shower_rain_d
-        "09n" -> R.drawable.shower_rain_n
-        "10d" -> R.drawable.rain_d
-        "10n" -> R.drawable.rain_n
-        "11d" -> R.drawable.thunder_d
-        "11n" -> R.drawable.thunder_n
-        "13d" -> R.drawable.snow
-        "13n" -> R.drawable.snow
-        "50d" -> R.drawable.mist
-        "50n" -> R.drawable.mist
-        else -> R.drawable.weather_icon_placeholder
-    }*/
+when (icon) {
+    "01d" -> R.drawable.clear_d
+    "01n" -> R.drawable.clear_n
+    "02d" -> R.drawable.few_clouds_d
+    "02n" -> R.drawable.few_clouds_n
+    "03d" -> R.drawable.scattered_clouds_d
+    "03n" -> R.drawable.scattered_clouds_n
+    "04d" -> R.drawable.broken_clouds_d
+    "04n" -> R.drawable.broken_clouds_n
+    "09d" -> R.drawable.shower_rain_d
+    "09n" -> R.drawable.shower_rain_n
+    "10d" -> R.drawable.rain_d
+    "10n" -> R.drawable.rain_n
+    "11d" -> R.drawable.thunder_d
+    "11n" -> R.drawable.thunder_n
+    "13d" -> R.drawable.snow
+    "13n" -> R.drawable.snow
+    "50d" -> R.drawable.mist
+    "50n" -> R.drawable.mist
+    else -> R.drawable.weather_icon_placeholder
+}*/
 
 fun getIconLink(icon: String) =
     when (icon) {

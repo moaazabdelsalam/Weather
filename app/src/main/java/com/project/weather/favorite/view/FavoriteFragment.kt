@@ -19,6 +19,7 @@ import com.project.weather.favorite.viewmodel.FavoriteViewModel
 import com.project.weather.favorite.viewmodel.FavoriteViewModelFactory
 import com.project.weather.local.ConcreteLocalSource
 import com.project.weather.model.FavoriteLocation
+import com.project.weather.model.State
 import com.project.weather.network.WeatherClient
 import com.project.weather.repo.Repo
 import com.project.weather.utils.collectLatestFlowOnLifecycle
@@ -51,18 +52,31 @@ class FavoriteFragment : Fragment() {
             Navigation.findNavController(view).navigate(action)
         }
 
-        collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) {
-            favoriteAdapter.submitList(it)
-            favoriteList = it.toMutableList()
-            val layoutAnimationController =
-                AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation)
-            binding.favoriteRecyclerV.apply {
-                visibility = View.VISIBLE
-                layoutAnimation = layoutAnimationController
-                scheduleLayoutAnimation()
+        collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) {state ->
+            when(state) {
+                is State.Failure -> showOnFailure()
+                State.Loading -> {}
+                is State.Success -> state.data?.let { showOnSuccess(it) }
             }
         }
         attachSwipeToDeleteToRV()
+    }
+
+    private fun showOnFailure() {
+        binding.favoriteRecyclerV.visibility = View.INVISIBLE
+        binding.openMapBtn.visibility = View.INVISIBLE
+    }
+
+    private fun showOnSuccess(list: List<FavoriteLocation>) {
+        favoriteAdapter.submitList(list)
+        favoriteList = list.toMutableList()
+        val layoutAnimationController =
+            AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation)
+        binding.favoriteRecyclerV.apply {
+            visibility = View.VISIBLE
+            layoutAnimation = layoutAnimationController
+            scheduleLayoutAnimation()
+        }
     }
 
     private fun init() {
@@ -74,7 +88,7 @@ class FavoriteFragment : Fragment() {
             ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         )
         favoriteViewModel =
-            ViewModelProvider(this, favoriteViewModelFactory)[FavoriteViewModel::class.java]
+            ViewModelProvider(requireActivity(), favoriteViewModelFactory)[FavoriteViewModel::class.java]
         favoriteAdapter = FavoriteAdapter(requireContext())
         binding.favoriteRecyclerV.adapter = favoriteAdapter
         binding.openMapBtn.startAnimation(

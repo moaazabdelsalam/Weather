@@ -5,6 +5,7 @@ import android.util.Log
 import com.project.weather.constants.Constants
 import com.project.weather.local.database.FavoriteDAO
 import com.project.weather.local.database.FavoriteDatabase
+import com.project.weather.model.AlertItem
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.WeatherResponse
 import kotlinx.coroutines.Dispatchers
@@ -74,4 +75,7 @@ class ConcreteLocalSource private constructor(context: Context) : LocalSource {
             null
         }
     }
+
+    override suspend fun updateAlert(location: FavoriteLocation) = favoriteDAO.updateAlert(location)
+
 }

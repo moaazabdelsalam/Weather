@@ -1,4 +1,4 @@
-package com.project.weather
+package com.project.weather.alert
 
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -9,14 +9,16 @@ import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.graphics.drawable.toBitmap
+import com.project.weather.MainActivity
+import com.project.weather.R
 import com.project.weather.constants.Constants
 import com.project.weather.local.ConcreteLocalSource
 import com.project.weather.model.State
 import com.project.weather.model.WeatherResponse
 import com.project.weather.network.WeatherClient
 import com.project.weather.repo.Repo
+import com.project.weather.repo.RepoInterface
+import com.project.weather.utils.convertWeatherToFavorite
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -28,6 +30,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 class AlarmReceiver : BroadcastReceiver() {
     private val TAG = "TAG AlarmReceiver"
+    lateinit var repo: RepoInterface
     val data: MutableStateFlow<WeatherResponse?> = MutableStateFlow(null)
 
     override fun onReceive(context: Context?, intent: Intent?) = goAsync {
@@ -44,6 +47,8 @@ class AlarmReceiver : BroadcastReceiver() {
                     else -> {
                         data.value?.let { weatherResponse ->
                             showNotification(context, cityName, weatherResponse)
+                            val location = convertWeatherToFavorite(weatherResponse, cityName)
+                            repo.updateAlert(location)
                         }
                     }
                 }
@@ -57,7 +62,7 @@ class AlarmReceiver : BroadcastReceiver() {
         lon: Double
     ) {
         Log.i(TAG, "getWeatherData: ")
-        val repo = Repo.getInstance(
+        repo = Repo.getInstance(
             WeatherClient,
             ConcreteLocalSource.getInstance(appContext)
         )
@@ -102,8 +107,10 @@ class AlarmReceiver : BroadcastReceiver() {
             NotificationCompat.Builder(appContext, Constants.ALERTS_NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.icon)
                 .setContentTitle("Alert in $cityName")
-                .setContentText(weatherResponse.alerts?.get(0)?.tags?.get(0)
-                    ?: "No weather alerts for now")
+                .setContentText(
+                    weatherResponse.alerts?.get(0)?.tags?.get(0)
+                        ?: "No weather alerts for now"
+                )
                 .setStyle(
                     NotificationCompat.BigTextStyle()
                         .bigText(

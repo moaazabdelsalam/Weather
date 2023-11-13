@@ -2,6 +2,7 @@ package com.project.weather.repo
 
 import android.util.Log
 import com.project.weather.local.LocalSource
+import com.project.weather.model.AlertItem
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.ReverseNominationResponse
 import com.project.weather.model.State
@@ -154,6 +155,7 @@ class Repo private constructor(
         localSource.deleteFromFavorite(location)
 
     override fun getAllFavoriteLocations() = localSource.getAllFavoriteLocations()
+    override suspend fun updateAlert(location: FavoriteLocation) = localSource.updateAlert(location)
 
     private fun wrapWithFlow(response: Response<WeatherResponse>): Flow<State<WeatherResponse?>> {
         return flow {

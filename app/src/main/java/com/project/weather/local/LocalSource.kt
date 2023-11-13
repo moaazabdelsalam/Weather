@@ -1,7 +1,9 @@
 package com.project.weather.local
 
 import android.util.Log
+import androidx.room.Update
 import com.project.weather.constants.Constants
+import com.project.weather.model.AlertItem
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.WeatherResponse
 import kotlinx.coroutines.Dispatchers
@@ -15,8 +17,14 @@ import java.io.ObjectOutputStream
 
 interface LocalSource {
     suspend fun addToFavorite(location: FavoriteLocation): Long
+
     suspend fun deleteFromFavorite(location: FavoriteLocation): Int
+
     fun getAllFavoriteLocations(): Flow<List<FavoriteLocation>>
+
     suspend fun cacheWeatherData(weatherData: WeatherResponse?)
+
     suspend fun readCachedWeatherData(): WeatherResponse?
+
+    suspend fun updateAlert(location: FavoriteLocation)
 }

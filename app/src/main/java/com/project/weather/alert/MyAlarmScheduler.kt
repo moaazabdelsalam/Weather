@@ -1,4 +1,4 @@
-package com.project.weather
+package com.project.weather.alert
 
 import android.app.AlarmManager
 import android.app.PendingIntent
@@ -7,14 +7,14 @@ import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import com.project.weather.constants.Constants
-import com.project.weather.model.AlarmItem
+import com.project.weather.model.AlertItem
 import java.time.ZoneId
 
-class AndroidAlarmScheduler(private val context: Context) : AlarmScheduler {
+class MyAlarmScheduler(private val context: Context) : AlarmScheduler {
 
     private val alarmManager = context.getSystemService(AlarmManager::class.java)
 
-    override fun schedule(item: AlarmItem) {
+    override fun schedule(item: AlertItem) {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             putExtra(Constants.EXTRA_CITY_NAME_KEY, item.cityName)
             putExtra(Constants.EXTRA_LAT_KEY, item.lat.toString())
@@ -40,7 +40,7 @@ class AndroidAlarmScheduler(private val context: Context) : AlarmScheduler {
         )
     }
 
-    override fun cancel(item: AlarmItem) {
+    override fun cancel(item: AlertItem) {
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
