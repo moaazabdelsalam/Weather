@@ -21,7 +21,7 @@ class SettingFragment : Fragment() {
     private val TAG = "TAG SettingFragment"
     private lateinit var binding: FragmentSettingBinding
     private lateinit var sharedViewModel: SharedViewModel
-    lateinit var _view: View
+    private lateinit var _view: View
     private val locationSources =
         arrayOf(Constants.PREF_LOCATION_GPS, Constants.PREF_LOCATION_MAP)
     private val languages =

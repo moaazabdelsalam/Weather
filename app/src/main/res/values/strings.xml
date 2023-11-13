@@ -29,4 +29,7 @@
     <string name="language">Language</string>
     <string name="feels_like">Feels like </string>
     <string name="clouds">Clouds</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="alert">Alerts</string>
 </resources>

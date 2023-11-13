@@ -10,6 +10,10 @@
             android:icon="@drawable/ic_favorite"
             android:title="@string/favorite" />
         <item
+            android:id="@+id/alarmFragment"
+            android:icon="@drawable/ic_alarm"
+            android:title="@string/alert" />
+        <item
             android:id="@+id/settingFragment"
             android:icon="@drawable/ic_settings"
             android:title="@string/setting" />

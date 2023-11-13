@@ -1,8 +1,8 @@
 package com.project.weather.repo
 
-import com.project.weather.model.State
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.ReverseNominationResponse
+import com.project.weather.model.State
 import com.project.weather.model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
@@ -27,6 +27,8 @@ interface RepoInterface {
         latitude: Double,
         longitude: Double
     ): Flow<State<ReverseNominationResponse>>
+
+    suspend fun getCachedWeatherData(): WeatherResponse?
 
     suspend fun addToFavorite(location: FavoriteLocation): Long
 

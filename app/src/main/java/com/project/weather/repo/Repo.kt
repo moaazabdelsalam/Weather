@@ -61,9 +61,7 @@ class Repo private constructor(
         try {
             val response = remoteSource.getWeatherData(latitude, longitude)
             if (response.isSuccessful) {
-                response.body()?.let { setCityName(it) }
-                //_homeDataApiState.emit(State.Success(response.body()))
-                //localSource.cacheWeatherData(response.body())
+                response.body()?.let { setHomeCityName(it) }
             } else {
                 _homeDataApiState.emit(State.Failure(response.message()))
             }
@@ -83,9 +81,7 @@ class Repo private constructor(
                 val response =
                     remoteSource.getWeatherData(cachedWeatherData.lat, cachedWeatherData.lon)
                 if (response.isSuccessful) {
-                    response.body()?.let { setCityName(it) }
-                    //_homeDataApiState.emit(State.Success(response.body()))
-                    //localSource.cacheWeatherData(response.body())
+                    response.body()?.let { setHomeCityName(it) }
                 } else {
                     _homeDataApiState.emit(State.Failure(response.message()))
                 }
@@ -100,9 +96,7 @@ class Repo private constructor(
         try {
             val response = remoteSource.getWeatherData(latitude, longitude)
             if (response.isSuccessful) {
-                response.body()?.let { setCityName(it) }
-                //_homeDataApiState.emit(State.Success(response.body()))
-                //localSource.cacheWeatherData(response.body())
+                response.body()?.let { setHomeCityName(it) }
             } else {
                 _homeDataApiState.emit(State.Failure(response.message()))
             }
@@ -141,10 +135,12 @@ class Repo private constructor(
         }
     }
 
-    private suspend fun setCityName(weatherResponse: WeatherResponse) {
+    override suspend fun getCachedWeatherData() = localSource.readCachedWeatherData()
+
+    private suspend fun setHomeCityName(weatherResponse: WeatherResponse) {
         getCityName(weatherResponse.lat, weatherResponse.lon).collectLatest {
             if (it is State.Success && it.data != null) {
-                weatherResponse.nameAr = it.data.namedetails.nameAr
+                weatherResponse.nameAr = it.data.namedetails.nameAr ?: it.data.namedetails.nameEn
                 weatherResponse.nameEn = it.data.namedetails.nameEn
                 _homeDataApiState.emit(State.Success(weatherResponse))
             }

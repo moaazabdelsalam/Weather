@@ -24,4 +24,12 @@ object Constants {
     const val PREF_SPEED_UNIT = "speed"
     const val PREF_SPEED_METER = "metre/sec"
     const val PREF_SPEED_MILE = "miles/hour"
+    const val NOTIFICATION_PERMISSION_ID = 19
+    const val FORECAST_NOTIFICATION_CHANNEL_ID = "74"
+    const val FORECAST_NOTIFICATION_ID = 22
+    const val ALERTS_NOTIFICATION_CHANNEL_ID = "1999"
+    const val ALERTS_NOTIFICATION_ID = 99
+    const val EXTRA_CITY_NAME_KEY = "city name"
+    const val EXTRA_LAT_KEY = "latitude"
+    const val EXTRA_LON_KEY = "longitude"
 }

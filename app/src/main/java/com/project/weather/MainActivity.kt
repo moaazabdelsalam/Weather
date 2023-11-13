@@ -21,6 +21,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.NavigationUI
+import androidx.work.Constraints
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.google.android.gms.location.*
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.ActivityMainBinding
@@ -28,6 +32,7 @@ import com.project.weather.repo.PreferenceRepo
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.osmdroid.util.GeoPoint
+import java.util.concurrent.TimeUnit
 
 
 const val LOCATION_PERMISSION_ID = 74
@@ -88,7 +93,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
+        if (ActivityCompat.checkSelfPermission(
+                this, android.Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestNotificationPermission()
+        }
     }
 
     private val locationCallback: LocationCallback = object : LocationCallback() {
@@ -114,11 +124,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-
-    }
-
     private fun getLocation() {
         if (checkPermission()) {
             if (isLocationEnabled()) {
@@ -139,6 +144,16 @@ class MainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED
     }
 
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                this, arrayOf(
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ), Constants.NOTIFICATION_PERMISSION_ID
+            )
+        }
+    }
+
     private fun requestPermission() {
         ActivityCompat.requestPermissions(
             this, arrayOf(
@@ -157,6 +172,12 @@ class MainActivity : AppCompatActivity() {
                 getLocation()
             } else {
                 Toast.makeText(this, "Need Location Permission", Toast.LENGTH_SHORT).show()
+            }
+        } else if (requestCode == Constants.NOTIFICATION_PERMISSION_ID) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                //getLocation()
+            } else {
+                Toast.makeText(this, "Need Notification Permission", Toast.LENGTH_SHORT).show()
             }
         }
     }
