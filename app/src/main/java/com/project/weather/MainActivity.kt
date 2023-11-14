@@ -117,12 +117,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        if (ActivityCompat.checkSelfPermission(
-                this, android.Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestNotificationPermission()
-        }
     }
 
     private val locationCallback: LocationCallback = object : LocationCallback() {
@@ -166,16 +160,6 @@ class MainActivity : AppCompatActivity() {
         ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
             this, android.Manifest.permission.ACCESS_COARSE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            ActivityCompat.requestPermissions(
-                this, arrayOf(
-                    android.Manifest.permission.POST_NOTIFICATIONS
-                ), Constants.NOTIFICATION_PERMISSION_ID
-            )
-        }
     }
 
     private fun requestPermission() {

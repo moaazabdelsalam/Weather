@@ -1,13 +1,16 @@
 package com.project.weather.alert.view
 
+import android.content.pm.PackageManager
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.datepicker.CalendarConstraints
@@ -17,6 +20,7 @@ import com.project.weather.R
 import com.project.weather.SharedViewModel
 import com.project.weather.alert.AlarmScheduler
 import com.project.weather.alert.MyAlarmScheduler
+import com.project.weather.constants.Constants
 import com.project.weather.databinding.FragmentAlarmBinding
 import com.project.weather.favorite.viewmodel.FavoriteViewModel
 import com.project.weather.favorite.viewmodel.FavoriteViewModelFactory
@@ -59,12 +63,28 @@ class AlarmFragment : Fragment() {
 
         init()
 
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(), android.Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            requestNotificationPermission()
+        }
+
         collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) { state ->
             when (state) {
                 is State.Failure -> showOnFailure()
                 State.Loading -> {}
                 is State.Success -> state.data?.let { showOnSuccess(it) }
             }
+        }
+    }
+    private fun requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            ActivityCompat.requestPermissions(
+                requireActivity(), arrayOf(
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ), Constants.NOTIFICATION_PERMISSION_ID
+            )
         }
     }
 

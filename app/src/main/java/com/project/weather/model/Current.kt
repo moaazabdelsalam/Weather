@@ -24,4 +24,4 @@ data class Current(
     @SerializedName("wind_gust")
     val windGust: Double,
     val weather: List<Weather>
-): Serializable
+) : Serializable

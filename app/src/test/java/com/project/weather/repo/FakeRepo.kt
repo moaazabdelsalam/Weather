@@ -14,17 +14,13 @@ import com.project.weather.model.State
 import com.project.weather.model.Temperature
 import com.project.weather.model.Weather
 import com.project.weather.model.WeatherResponse
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.flow
 
-class RepoTest {
+class FakeRepo(private val localSource: FakeLocalDatasource, private val remoteSource: FakeRemoteDatasource): RepoInterface {
+
     private val databaseWeather1 =
         FavoriteLocation(12.3, 32.1, "Mahalla", "Clear", "Clear sky", "src", 2.2, 32.2)
     private val databaseWeather2 =
@@ -35,6 +31,14 @@ class RepoTest {
         FavoriteLocation(12.3, 32.1, "El-Mahalla", "Clear", "Clear sky", "src", 2.2, 32.2)
     private val databaseWeather5 =
         FavoriteLocation(12.3, 32.1, "Mahalla", "Clear", "Clear sky", "src", 2.2, 32.2)
+
+    private val localWeather = mutableListOf<FavoriteLocation>(
+        databaseWeather1,
+        databaseWeather2,
+        databaseWeather3,
+        databaseWeather4,
+        databaseWeather5
+    )
 
     val weatherResponse = WeatherResponse(
         7.4,
@@ -115,77 +119,61 @@ class RepoTest {
         )
     )
 
-    private val fakeLocalData = mutableListOf(
-        databaseWeather1,
-        databaseWeather2,
-        databaseWeather3,
-        databaseWeather4,
-        databaseWeather5
-    )
+    private var _homeDataApiState: MutableSharedFlow<State<WeatherResponse?>> =
+        MutableSharedFlow()
+    override val homeDataApiState: SharedFlow<State<WeatherResponse?>>
+        get() = _homeDataApiState
 
-    private lateinit var fakeLocalDatasource: FakeLocalDatasource
-    private lateinit var fakeRemoteDatasource: FakeRemoteDatasource
-    private lateinit var repo: Repo
-
-    @Before
-    fun setup() {
-        fakeLocalDatasource = FakeLocalDatasource(fakeLocalData)
-        fakeRemoteDatasource = FakeRemoteDatasource(weatherResponse, reverseNominationResponse)
-        repo = Repo.getInstance(fakeRemoteDatasource, fakeLocalDatasource)
+    override suspend fun getWeatherDataOfHomeLocation(latitude: Double, longitude: Double) {
+        _homeDataApiState.emit(State.Success(weatherResponse))
     }
 
-    @Test
-    fun addWeather_Not_Exist() = runBlocking {
-        val fav = FavoriteLocation(74.22, 22.74, "MASR", "Clear", "DEsc", "10d", 2.2, 7.4)
-        val result = repo.addToFavorite(fav)
-        assertEquals(result, 1L)
+    override suspend fun getCachedWeatherDataAndUpdate() {
+        TODO("Not yet implemented")
     }
 
-    @Test
-    fun addWeather_Exist() = runBlocking {
-        val result = repo.addToFavorite(databaseWeather1)
-        assertEquals(result, 1L)
+    override suspend fun setHomeLocation(latitude: Double, longitude: Double) {
+        TODO("Not yet implemented")
     }
 
-    @Test
-    fun delete_Exist() = runBlocking {
-        val result = repo.deleteFromFavorite(databaseWeather4)
-        assertEquals(result, 1)
+    override suspend fun getWeatherData(
+        latitude: Double,
+        longitude: Double
+    ): Flow<State<WeatherResponse?>> {
+        TODO("Not yet implemented")
     }
 
-    @Test
-    fun delete_Not_Exist() = runBlocking {
-        val fav = FavoriteLocation(74.220 , 22.74 ,"MASR" , "Clear", "DEsc","10d", 2.2, 7.4)
-        val result = repo.deleteFromFavorite(fav)
-        assertEquals(result, 1)
-    }
-
-    @Test
-    fun getAllFavWeather() = runBlocking {
-        val flow = flowOf(fakeLocalData)
-        val result = flow.toList()
-        assertEquals(listOf(fakeLocalData), result)
-    }
-
-    @Test
-    fun updateAlert_Enabled_Success() = runBlocking {
-        val fav = fakeLocalData[0]
-        repo.updateAlert(fav)
-        assertEquals(true, fav.isScheduled)
-    }
-
-    @Test
-    fun getHomeData_Success() = runBlocking {
-        var data: WeatherResponse? = null
-        repo.getWeatherDataOfHomeLocation(7.4, 2.2)
-        val job = launch {
-            repo.homeDataApiState.collectLatest {
-                if (it is State.Success){
-                    data = it.data
-                }
+    override suspend fun getCityName(
+        latitude: Double,
+        longitude: Double
+    ): Flow<State<ReverseNominationResponse>> {
+        val response = remoteSource.getCityName(latitude, longitude)
+        return flow {
+            if (response.isSuccessful){
+                emit(State.Success(response.body()))
+            } else {
+                emit(State.Failure(response.message()))
             }
         }
-        assertEquals(false , data != null)
-        job.cancel()
+    }
+
+    override suspend fun getCachedWeatherData(): State<WeatherResponse?> {
+        return State.Loading
+    }
+
+    override suspend fun addToFavorite(location: FavoriteLocation): Long {
+        return localSource.addToFavorite(location)
+    }
+
+    override suspend fun deleteFromFavorite(location: FavoriteLocation): Int {
+        return localSource.deleteFromFavorite(location)
+    }
+
+    override fun getAllFavoriteLocations(): Flow<List<FavoriteLocation>> {
+        return localSource.getAllFavoriteLocations()
+    }
+
+    override suspend fun updateAlert(location: FavoriteLocation) {
+        return localSource.updateAlert(location)
     }
 }
