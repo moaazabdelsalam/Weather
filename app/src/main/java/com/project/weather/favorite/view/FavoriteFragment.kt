@@ -32,6 +32,11 @@ class FavoriteFragment : Fragment() {
     private lateinit var binding: FragmentFavoriteBinding
     private lateinit var favoriteAdapter: FavoriteAdapter
     private var favoriteList: MutableList<FavoriteLocation> = mutableListOf()
+    private lateinit var _view: View
+    private val listener: (FavoriteLocation) -> Unit = {
+        favoriteViewModel.setSelectedItem(it)
+        Navigation.findNavController(_view).navigate(R.id.action_favoriteFragment_to_detailsFragment)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +49,7 @@ class FavoriteFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        _view = view
         init()
 
         binding.openMapBtn.setOnClickListener {
@@ -52,8 +58,8 @@ class FavoriteFragment : Fragment() {
             Navigation.findNavController(view).navigate(action)
         }
 
-        collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) {state ->
-            when(state) {
+        collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) { state ->
+            when (state) {
                 is State.Failure -> showOnFailure()
                 State.Loading -> {}
                 is State.Success -> state.data?.let { showOnSuccess(it) }
@@ -64,10 +70,23 @@ class FavoriteFragment : Fragment() {
 
     private fun showOnFailure() {
         binding.favoriteRecyclerV.visibility = View.INVISIBLE
-        binding.openMapBtn.visibility = View.INVISIBLE
+        binding.openMapBtn.visibility = View.VISIBLE
+        binding.noDataAnimation.visibility = View.VISIBLE
+        binding.noDataAnimation.playAnimation()
     }
 
     private fun showOnSuccess(list: List<FavoriteLocation>) {
+        binding.noDataAnimation.apply {
+            pauseAnimation()
+            visibility = View.GONE
+        }
+        binding.openMapBtn.visibility = View.VISIBLE
+        binding.openMapBtn.startAnimation(
+            AnimationUtils.loadAnimation(
+                requireContext(),
+                R.anim.from_bottom
+            )
+        )
         favoriteAdapter.submitList(list)
         favoriteList = list.toMutableList()
         val layoutAnimationController =
@@ -88,15 +107,12 @@ class FavoriteFragment : Fragment() {
             ViewModelProvider(requireActivity())[SharedViewModel::class.java]
         )
         favoriteViewModel =
-            ViewModelProvider(requireActivity(), favoriteViewModelFactory)[FavoriteViewModel::class.java]
-        favoriteAdapter = FavoriteAdapter(requireContext())
+            ViewModelProvider(
+                requireActivity(),
+                favoriteViewModelFactory
+            )[FavoriteViewModel::class.java]
+        favoriteAdapter = FavoriteAdapter(requireContext(), listener)
         binding.favoriteRecyclerV.adapter = favoriteAdapter
-        binding.openMapBtn.startAnimation(
-            AnimationUtils.loadAnimation(
-                requireContext(),
-                R.anim.from_bottom
-            )
-        )
     }
 
     private fun attachSwipeToDeleteToRV() {

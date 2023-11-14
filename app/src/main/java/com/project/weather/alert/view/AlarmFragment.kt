@@ -13,10 +13,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
-import com.project.weather.alert.AlarmScheduler
-import com.project.weather.alert.MyAlarmScheduler
 import com.project.weather.R
 import com.project.weather.SharedViewModel
+import com.project.weather.alert.AlarmScheduler
+import com.project.weather.alert.MyAlarmScheduler
 import com.project.weather.databinding.FragmentAlarmBinding
 import com.project.weather.favorite.viewmodel.FavoriteViewModel
 import com.project.weather.favorite.viewmodel.FavoriteViewModelFactory
@@ -41,11 +41,10 @@ class AlarmFragment : Fragment() {
 
     private var listener: (FavoriteLocation) -> Unit = { location ->
         if (location.isScheduled)
-            favoriteViewModel.dismissAlert(location)
+            dismiss(location)
         else
             showDateTimePickerAndSchedule(location)
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,8 +59,8 @@ class AlarmFragment : Fragment() {
 
         init()
 
-        collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) {state ->
-            when(state) {
+        collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) { state ->
+            when (state) {
                 is State.Failure -> showOnFailure()
                 State.Loading -> {}
                 is State.Success -> state.data?.let { showOnSuccess(it) }
@@ -70,10 +69,16 @@ class AlarmFragment : Fragment() {
     }
 
     private fun showOnFailure() {
-
+        binding.alertRecyclerV.visibility = View.INVISIBLE
+        binding.noDataAnimation.visibility = View.VISIBLE
+        binding.noDataAnimation.playAnimation()
     }
 
     private fun showOnSuccess(list: List<FavoriteLocation>) {
+        binding.noDataAnimation.apply {
+            pauseAnimation()
+            visibility = View.GONE
+        }
         alertAdapter.submitList(list)
         val layoutAnimationController =
             AnimationUtils.loadLayoutAnimation(requireContext(), R.anim.layout_animation)
@@ -157,6 +162,17 @@ class AlarmFragment : Fragment() {
         }
         datePicker.show(requireActivity().supportFragmentManager, "DATE_PICKER")
 
+    }
+
+    private fun dismiss(location: FavoriteLocation) {
+        val alertItem = AlertItem(
+            LocalDateTime.now(),
+            location.cityName,
+            location.lat,
+            location.lon
+        )
+        scheduler.cancel(alertItem)
+        favoriteViewModel.dismissAlert(location)
     }
 
     private fun convertToLocalDateTime(epochMillis: Long): LocalDateTime {

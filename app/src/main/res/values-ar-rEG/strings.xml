@@ -29,4 +29,7 @@
     <string name="language">اللغه</string>
     <string name="feels_like">تبدو</string>
     <string name="clouds">السحاب</string>
+    <string name="alert">التنبيهات</string>
+    <string name="internet_connection_lost">لا يوجد اتصال بالانترنت</string>
+    <string name="something_went_wrong_please_try_again_later">حدث خطأ ما برجاء المحاوله لاحقا</string>
 </resources>

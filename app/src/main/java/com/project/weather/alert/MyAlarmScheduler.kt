@@ -33,7 +33,7 @@ class MyAlarmScheduler(private val context: Context) : AlarmScheduler {
             item.time.atZone(ZoneId.systemDefault()).toEpochSecond() * 1000,
             PendingIntent.getBroadcast(
                 context,
-                item.hashCode(),
+                (item.lat + item.lon + 197422).toInt(),
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
@@ -44,7 +44,7 @@ class MyAlarmScheduler(private val context: Context) : AlarmScheduler {
         alarmManager.cancel(
             PendingIntent.getBroadcast(
                 context,
-                item.hashCode(),
+                (item.lat + item.lon + 197422).toInt(),
                 Intent(context, AlarmReceiver::class.java),
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )

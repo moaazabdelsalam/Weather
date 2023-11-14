@@ -12,7 +12,7 @@ import com.project.weather.databinding.FavoriteItemBinding
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.utils.getIconLink
 
-class FavoriteAdapter(private val context: Context) :
+class FavoriteAdapter(private val context: Context, private val listener: (FavoriteLocation) -> Unit) :
     ListAdapter<FavoriteLocation, FavoriteAdapter.FavoriteViewHolder>(FavoriteDiffUtil()) {
     private lateinit var binding: FavoriteItemBinding
 
@@ -35,6 +35,7 @@ class FavoriteAdapter(private val context: Context) :
             favoriteWeatherDescriptionTxtV.text = favorite.main
             favoriteMaxTempTxtV.text = favorite.max.toInt().toString()
             favoriteMinTempTxtV.text = favorite.min.toInt().toString()
+            favoriteCard.setOnClickListener { listener(favorite) }
         }
     }
 

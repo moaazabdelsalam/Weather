@@ -28,7 +28,7 @@ interface RepoInterface {
         longitude: Double
     ): Flow<State<ReverseNominationResponse>>
 
-    suspend fun getCachedWeatherData(): WeatherResponse?
+    suspend fun getCachedWeatherData(): State<WeatherResponse?>
 
     suspend fun addToFavorite(location: FavoriteLocation): Long
 

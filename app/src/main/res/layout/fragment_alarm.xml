@@ -16,12 +16,14 @@
         app:spanCount="2"
         tools:listitem="@layout/alert_item" />
 
-    <!--<com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/openMapBtn"
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/noDataAnimation"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="16dp"
-        android:src="@drawable/ic_add" />-->
+        android:layout_gravity="center"
+        android:visibility="invisible"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/animation_no_result" />
+
 </FrameLayout>

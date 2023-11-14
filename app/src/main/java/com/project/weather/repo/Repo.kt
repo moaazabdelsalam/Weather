@@ -2,7 +2,6 @@ package com.project.weather.repo
 
 import android.util.Log
 import com.project.weather.local.LocalSource
-import com.project.weather.model.AlertItem
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.ReverseNominationResponse
 import com.project.weather.model.State
@@ -55,8 +54,8 @@ class Repo private constructor(
         longitude: Double
     ) {
         val cachedWeatherData = localSource.readCachedWeatherData()
-        if (cachedWeatherData != null) {
-            _homeDataApiState.emit(State.Success(cachedWeatherData))
+        if (cachedWeatherData is State.Success) {
+            _homeDataApiState.emit(State.Success(cachedWeatherData.data))
         }
         _homeDataApiState.emit(State.Loading)
         try {
@@ -75,12 +74,12 @@ class Repo private constructor(
 
     override suspend fun getCachedWeatherDataAndUpdate() {
         val cachedWeatherData = localSource.readCachedWeatherData()
-        if (cachedWeatherData != null) {
-            _homeDataApiState.emit(State.Success(cachedWeatherData))
+        if (cachedWeatherData is State.Success) {
+            _homeDataApiState.emit(State.Success(cachedWeatherData.data))
             _homeDataApiState.emit(State.Loading)
             try {
                 val response =
-                    remoteSource.getWeatherData(cachedWeatherData.lat, cachedWeatherData.lon)
+                    remoteSource.getWeatherData(cachedWeatherData.data!!.lat, cachedWeatherData.data.lon)
                 if (response.isSuccessful) {
                     response.body()?.let { setHomeCityName(it) }
                 } else {

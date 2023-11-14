@@ -5,8 +5,8 @@ import android.util.Log
 import com.project.weather.constants.Constants
 import com.project.weather.local.database.FavoriteDAO
 import com.project.weather.local.database.FavoriteDatabase
-import com.project.weather.model.AlertItem
 import com.project.weather.model.FavoriteLocation
+import com.project.weather.model.State
 import com.project.weather.model.WeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -60,7 +60,7 @@ class ConcreteLocalSource private constructor(context: Context) : LocalSource {
         }
     }
 
-    override suspend fun readCachedWeatherData(): WeatherResponse? {
+    override suspend fun readCachedWeatherData(): State<WeatherResponse?> {
         val file = File(Constants.cacheDirectory, Constants.CACHE_FILE_NAME)
         return try {
             withContext(Dispatchers.IO) {
@@ -68,11 +68,11 @@ class ConcreteLocalSource private constructor(context: Context) : LocalSource {
                 val objectInputStream = ObjectInputStream(fileInputStream)
                 val weatherData = objectInputStream.readObject() as WeatherResponse
                 Log.i(TAG, "readCachedWeatherData: success")
-                weatherData
+                State.Success(weatherData)
             }
         } catch (e: Exception) {
             Log.i(TAG, "readCachedWeatherData exception: $e")
-            null
+            State.Failure(e.message.toString())
         }
     }
 

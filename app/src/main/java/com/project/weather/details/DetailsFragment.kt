@@ -1,4 +1,4 @@
-package com.project.weather.home.view
+package com.project.weather.details
 
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +15,11 @@ import com.project.weather.R
 import com.project.weather.SharedViewModel
 import com.project.weather.SharedViewModelFactory
 import com.project.weather.constants.Constants
-import com.project.weather.databinding.FragmentHomeBinding
+import com.project.weather.databinding.FragmentDetailsBinding
+import com.project.weather.favorite.viewmodel.FavoriteViewModel
+import com.project.weather.favorite.viewmodel.FavoriteViewModelFactory
+import com.project.weather.home.view.DailyAdapter
+import com.project.weather.home.view.HourlyAdapter
 import com.project.weather.home.viewmodel.HomeViewModel
 import com.project.weather.home.viewmodel.HomeViewModelFactory
 import com.project.weather.local.ConcreteLocalSource
@@ -33,9 +37,10 @@ import com.project.weather.utils.getIconLink
 import com.project.weather.utils.metersPerSecondToMilesPerHour
 import java.util.Locale
 
-class HomeFragment : Fragment() {
-    private val TAG = "TAG HomeFragment"
-    private lateinit var binding: FragmentHomeBinding
+class DetailsFragment : Fragment() {
+    private val TAG = "TAG DetailsFragment"
+    private lateinit var binding: FragmentDetailsBinding
+    private lateinit var viewModel: FavoriteViewModel
     private lateinit var homeViewModel: HomeViewModel
     private lateinit var hourlyAdapter: HourlyAdapter
     private lateinit var dailyAdapter: DailyAdapter
@@ -45,7 +50,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        binding = FragmentDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -54,12 +59,7 @@ class HomeFragment : Fragment() {
         Log.i(TAG, "onViewCreated: ")
         init()
 
-        binding.homeSwipeRefresh.setOnRefreshListener {
-            binding.homeSwipeRefresh.isRefreshing = false
-            homeViewModel.getHomeWeatherData()
-        }
-
-        collectLatestFlowOnLifecycle(homeViewModel.weatherDataApiStateFlow) { state ->
+        collectLatestFlowOnLifecycle(viewModel.selectedItem) { state ->
             //Log.i(TAG, "weather state result $state")
             when (state) {
                 is State.Failure -> {
@@ -74,36 +74,24 @@ class HomeFragment : Fragment() {
             }
         }
 
-        collectLatestFlowOnLifecycle(homeViewModel.getHomeLocationSource()) { source ->
-            when (source) {
-                Constants.PREF_LOCATION_GPS -> {
-                    binding.changeMapLocationBtn.visibility = View.GONE
-                }
-
-                Constants.PREF_LOCATION_MAP -> {
-                    binding.changeMapLocationBtn.visibility = View.VISIBLE
-                    binding.changeMapLocationBtn.startAnimation(
-                        AnimationUtils.loadAnimation(
-                            requireContext(),
-                            R.anim.from_bottom
-                        )
-                    )
-                }
-
-                else -> {}
-            }
-        }
-
-        collectLatestFlowOnLifecycle(myConnectivityManager.isConnected) {
-            if (!it)
-                homeViewModel.getCache()
-        }
-        binding.changeMapLocationBtn.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_homeFragment_to_mapFragment)
+        binding.navigateUpBtn.setOnClickListener {
+            Navigation.findNavController(view).navigateUp()
         }
     }
 
     private fun init() {
+        val favoriteViewModelFactory = FavoriteViewModelFactory(
+            Repo.getInstance(
+                WeatherClient,
+                ConcreteLocalSource.getInstance(requireContext())
+            ),
+            ViewModelProvider(requireActivity())[SharedViewModel::class.java]
+        )
+        viewModel =
+            ViewModelProvider(
+                requireActivity(),
+                favoriteViewModelFactory
+            )[FavoriteViewModel::class.java]
         val viewModelFactory = HomeViewModelFactory(
             Repo.getInstance(
                 WeatherClient,

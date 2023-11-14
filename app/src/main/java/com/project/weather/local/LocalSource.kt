@@ -5,6 +5,7 @@ import androidx.room.Update
 import com.project.weather.constants.Constants
 import com.project.weather.model.AlertItem
 import com.project.weather.model.FavoriteLocation
+import com.project.weather.model.State
 import com.project.weather.model.WeatherResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ interface LocalSource {
 
     suspend fun cacheWeatherData(weatherData: WeatherResponse?)
 
-    suspend fun readCachedWeatherData(): WeatherResponse?
+    suspend fun readCachedWeatherData(): State<WeatherResponse?>
 
     suspend fun updateAlert(location: FavoriteLocation)
 }

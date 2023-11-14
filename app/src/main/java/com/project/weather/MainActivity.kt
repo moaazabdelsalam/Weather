@@ -28,6 +28,7 @@ import androidx.work.WorkManager
 import com.google.android.gms.location.*
 import com.project.weather.constants.Constants
 import com.project.weather.databinding.ActivityMainBinding
+import com.project.weather.network.MyConnectivityManager
 import com.project.weather.repo.PreferenceRepo
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var myConnectivityManager: MyConnectivityManager
     lateinit var geocoder: Geocoder
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,13 +53,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         Constants.cacheDirectory = this.cacheDir.toString()
-
+        myConnectivityManager = MyConnectivityManager(this)
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.mainNavHost) as NavHostFragment
         val navController = navHostFragment.navController
         NavigationUI.setupWithNavController(binding.bottomNav, navController)
 
-        navController.addOnDestinationChangedListener { navController1, navDestination, bundle ->
+        navController.addOnDestinationChangedListener { _, navDestination, _ ->
             if (navDestination.id == R.id.mapFragment) {
                 binding.bottomNav.visibility = View.GONE
             } else {
@@ -88,6 +90,28 @@ class MainActivity : AppCompatActivity() {
 
                         else -> {
                             Log.i(TAG, "no location source")
+                        }
+                    }
+                }
+            }
+        }
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                myConnectivityManager.isConnected.collectLatest {
+                    when(it) {
+                        true -> {
+                            binding.apply {
+                                noConnectionTxtV.visibility = View.GONE
+                                noConnectionAnimation.pauseAnimation()
+                                noConnectionAnimation.visibility = View.GONE
+                            }
+                        }
+                        false -> {
+                            binding.apply {
+                                noConnectionTxtV.visibility = View.VISIBLE
+                                noConnectionAnimation.playAnimation()
+                                noConnectionAnimation.visibility = View.VISIBLE
+                            }
                         }
                     }
                 }

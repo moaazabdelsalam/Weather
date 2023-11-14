@@ -5,9 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.project.weather.SharedViewModel
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.State
+import com.project.weather.model.WeatherResponse
 import com.project.weather.repo.RepoInterface
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -19,10 +22,10 @@ class FavoriteViewModel(
 ) : ViewModel() {
     private val TAG = "TAG FavoriteViewModel"
 
-    private var _addToFavoriteState: MutableStateFlow<Long?> =
-        MutableStateFlow(null)
-    val addToFavoriteState: StateFlow<Long?>
-        get() = _addToFavoriteState
+    private var _selectedItem: MutableSharedFlow<State<WeatherResponse?>> =
+        MutableSharedFlow()
+    val selectedItem: SharedFlow<State<WeatherResponse?>>
+        get() = _selectedItem
 
     private var _favoriteList: MutableStateFlow<State<List<FavoriteLocation>>> =
         MutableStateFlow(State.Loading)
@@ -33,9 +36,9 @@ class FavoriteViewModel(
         getAllFavorite()
     }
 
-    private fun getAllFavorite() {
+    fun getAllFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
-            repo.getAllFavoriteLocations().collectLatest {list ->
+            repo.getAllFavoriteLocations().collectLatest { list ->
                 withContext(Dispatchers.Main) {
                     if (list.isEmpty())
                         _favoriteList.value = State.Failure("No Data Found...")
@@ -65,6 +68,18 @@ class FavoriteViewModel(
         location.timeString = ""
         viewModelScope.launch(Dispatchers.IO) {
             repo.updateAlert(location)
+        }
+    }
+
+    fun setSelectedItem(fav: FavoriteLocation) {
+        viewModelScope.launch {
+            repo.getWeatherData(fav.lat, fav.lon).collectLatest {
+                if (it is State.Success) {
+                    it.data?.nameEn = fav.cityName
+                    _selectedItem.emit(State.Success(it.data))
+                } else
+                    _selectedItem.emit(it)
+            }
         }
     }
 }

@@ -45,6 +45,12 @@ class HomeViewModel(private val repo: RepoInterface, private val sharedViewModel
         }
     }
 
+    fun getCache() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _weatherDataApiStateFlow.value = repo.getCachedWeatherData()
+        }
+    }
+
     fun getHomeLocationSource() = sharedViewModel.homeLocationSource
 
     fun getTemperatureUnit() = sharedViewModel.temperatureUnitValue
