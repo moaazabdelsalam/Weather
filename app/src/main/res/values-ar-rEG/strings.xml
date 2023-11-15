@@ -32,4 +32,20 @@
     <string name="alert">التنبيهات</string>
     <string name="internet_connection_lost">لا يوجد اتصال بالانترنت</string>
     <string name="something_went_wrong_please_try_again_later">حدث خطأ ما برجاء المحاوله لاحقا</string>
+    <string name="gps">محدد المواقع</string>
+    <string name="map">الخريطة</string>
+    <string name="mps">متر/ثانية</string>
+    <string name="mph">ميل/ساعة</string>
+    <string name="celsius_name">درجة مئوية</string>
+    <string name="kelvin_name">كلفن</string>
+    <string name="fahrenheit_name">فهرنهايت</string>
+    <string name="home_location">الموقع الرئيسي</string>
+    <string name="set_home_location_to">"تغيير موقع الشاشة الرئيسيه الى "</string>
+    <string name="add_city_to_favorite">اضف مدينة الى قائمه المفضلة</string>
+    <string name="add">"اضف "</string>
+    <string name="to_favorite">" الي المفضلة"</string>
+    <string name="home_location_changed">تم تغيير المقع الرئيسي</string>
+    <string name="successfully_added_to_favorite">تم الاضافة الى المفضله بنجاح</string>
+    <string name="dismiss_alert">الغاء التنبية</string>
+    <string name="dismiss_alert_confirm">هل انت متاكد انك تريد الغاء التنبيه</string>
 </resources>

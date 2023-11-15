@@ -34,6 +34,7 @@ import org.osmdroid.views.overlay.compass.InternalCompassOrientationProvider
 import org.osmdroid.views.overlay.gestures.RotationGestureOverlay
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import java.util.Locale
 
 class MapFragment : Fragment() {
     private val TAG = "TAG MapFragment"
@@ -91,7 +92,12 @@ class MapFragment : Fragment() {
 
                 is State.Success -> {
                     binding.progressBar.visibility = View.GONE
-                    cityName = state.data?.namedetails?.nameEn ?: "City"
+                    cityName = state.data?.namedetails?.let {
+                        if (Locale.getDefault() == Locale.ENGLISH)
+                            it.nameEn
+                        else
+                            it.nameAr
+                    } ?: "City"
                     if (source != "NAN") {
                         showAddToFavDialog()
                     } else {
@@ -188,7 +194,7 @@ class MapFragment : Fragment() {
     private fun showErrorToast() {
         Toast.makeText(
             requireContext(),
-            "something went wrong please try again later",
+            R.string.something_went_wrong_please_try_again_later,
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -196,7 +202,7 @@ class MapFragment : Fragment() {
     private fun showAddFavSuccess() {
         Toast.makeText(
             requireContext(),
-            "successfully added to favorite",
+            getString(R.string.successfully_added_to_favorite),
             Toast.LENGTH_SHORT
         ).show()
     }
@@ -204,19 +210,19 @@ class MapFragment : Fragment() {
     private fun showHomeChangedSuccess() {
         Toast.makeText(
             requireContext(),
-            "Home location changed",
+            getString(R.string.home_location_changed),
             Toast.LENGTH_SHORT
         ).show()
     }
 
     private fun showAddToFavDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Add city to favorite")
-            .setMessage("Add $cityName to favorite?")
-            .setNegativeButton("Cancel") { dialog, which ->
+            .setTitle(getString(R.string.add_city_to_favorite))
+            .setMessage(getString(R.string.add) + cityName + getString(R.string.to_favorite))
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
                 dialog.dismiss()
             }
-            .setPositiveButton("Ok") { dialog, which ->
+            .setPositiveButton(R.string.ok) { dialog, _ ->
                 mapViewModel.getWeatherData(latitude, longitude)
                 dialog.dismiss()
             }
@@ -225,12 +231,12 @@ class MapFragment : Fragment() {
 
     private fun showChangeHomeLocationDialog() {
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle("Home Location")
-            .setMessage("set home location to $cityName?")
-            .setNegativeButton("Cancel") { dialog, which ->
+            .setTitle(getString(R.string.home_location))
+            .setMessage(getString(R.string.set_home_location_to) + cityName)
+            .setNegativeButton(R.string.cancel) { dialog, which ->
                 dialog.dismiss()
             }
-            .setPositiveButton("Ok") { dialog, which ->
+            .setPositiveButton(R.string.ok) { dialog, which ->
                 mapViewModel.setHomeLocation(latitude, longitude)
                 dialog.dismiss()
             }

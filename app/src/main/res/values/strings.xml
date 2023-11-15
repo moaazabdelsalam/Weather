@@ -32,6 +32,20 @@
     <string name="alert">Alerts</string>
     <string name="internet_connection_lost">Internet Connection Lost</string>
     <string name="something_went_wrong_please_try_again_later">Something went wrong please try again later</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="gps">GPS</string>
+    <string name="map">Map</string>
+    <string name="mps">meter/second</string>
+    <string name="mph">miles/hour</string>
+    <string name="celsius_name">Celsius</string>
+    <string name="kelvin_name">Kelvin</string>
+    <string name="fahrenheit_name">Fahrenheit</string>
+    <string name="home_location">Home Location</string>
+    <string name="set_home_location_to">"set home location to "</string>
+    <string name="add_city_to_favorite">Add city to favorite</string>
+    <string name="add">"Add "</string>
+    <string name="to_favorite">" to favorite?"</string>
+    <string name="home_location_changed">Home location changed</string>
+    <string name="successfully_added_to_favorite">successfully added to favorite</string>
+    <string name="dismiss_alert">Dismiss Alert</string>
+    <string name="dismiss_alert_confirm">are you sure you want to dismiss alert</string>
 </resources>

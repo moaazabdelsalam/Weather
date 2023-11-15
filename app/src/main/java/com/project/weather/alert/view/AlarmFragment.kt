@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.project.weather.R
 import com.project.weather.SharedViewModel
@@ -187,14 +188,24 @@ class AlarmFragment : Fragment() {
     }
 
     private fun dismiss(location: FavoriteLocation) {
-        val alertItem = AlertItem(
-            LocalDateTime.now(),
-            location.cityName,
-            location.lat,
-            location.lon
-        )
-        scheduler.cancel(alertItem)
-        favoriteViewModel.dismissAlert(location)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(resources.getString(R.string.dismiss_alert))
+            .setMessage(getString(R.string.dismiss_alert_confirm))
+            .setNegativeButton(resources.getString(R.string.cancel)) { dialog, _ ->
+                dialog.dismiss()
+            }
+            .setPositiveButton(resources.getString(R.string.ok)) { dialog, _ ->
+                val alertItem = AlertItem(
+                    LocalDateTime.now(),
+                    location.cityName,
+                    location.lat,
+                    location.lon
+                )
+                scheduler.cancel(alertItem)
+                favoriteViewModel.dismissAlert(location)
+                dialog.dismiss()
+            }
+            .show()
     }
 
     private fun convertToLocalDateTime(epochMillis: Long): LocalDateTime {

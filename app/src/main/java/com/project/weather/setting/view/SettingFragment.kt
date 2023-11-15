@@ -22,15 +22,11 @@ class SettingFragment : Fragment() {
     private lateinit var binding: FragmentSettingBinding
     private lateinit var sharedViewModel: SharedViewModel
     private lateinit var _view: View
-    private val locationSources =
-        arrayOf(Constants.PREF_LOCATION_GPS, Constants.PREF_LOCATION_MAP)
+    private lateinit var locationSources: Array<String>
     private val languages =
         arrayOf("English", "العربية")
-    private val tempUnits =
-        arrayOf(Constants.PREF_TEMP_C, Constants.PREF_TEMP_K, Constants.PREF_TEMP_F)
-    private val speedUnits =
-        arrayOf(Constants.PREF_SPEED_METER, Constants.PREF_SPEED_MILE)
-
+    private lateinit var tempUnits: Array<String>
+    private lateinit var speedUnits: Array<String>
     private val listener: (Int) -> Unit = { position ->
         when (position) {
             0 -> handelLocationDialogue()
@@ -45,6 +41,19 @@ class SettingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSettingBinding.inflate(inflater, container, false)
+
+        locationSources =
+            arrayOf(resources.getString(R.string.gps), resources.getString(R.string.map))
+        tempUnits =
+            arrayOf(
+                resources.getString(R.string.celsius_name),
+                resources.getString(R.string.kelvin_name),
+                resources.getString(R.string.fahrenheit_name)
+            )
+        speedUnits =
+            arrayOf(resources.getString(R.string.mps), resources.getString(R.string.mph))
+
+
         return binding.root
     }
 

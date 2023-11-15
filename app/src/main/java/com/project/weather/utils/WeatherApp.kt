@@ -4,7 +4,11 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.Typeface
 import android.os.Build
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.res.ResourcesCompat
+import com.project.weather.R
 import com.project.weather.constants.Constants
 import com.yariksoffice.lingver.Lingver
 
