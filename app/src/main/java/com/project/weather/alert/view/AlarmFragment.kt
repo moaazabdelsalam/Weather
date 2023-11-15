@@ -14,6 +14,7 @@ import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.datepicker.CalendarConstraints
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.project.weather.R
@@ -30,7 +31,6 @@ import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.State
 import com.project.weather.network.WeatherClient
 import com.project.weather.repo.Repo
-import com.project.weather.utils.collectLatestFlowOnLifecycle
 import com.project.weather.utils.convertLocalDateTimeToString
 import java.time.Instant
 import java.time.LocalDateTime
@@ -70,7 +70,7 @@ class AlarmFragment : Fragment() {
             requestNotificationPermission()
         }
 
-        collectLatestFlowOnLifecycle(favoriteViewModel.favoriteList) { state ->
+        favoriteViewModel.lFavoriteList.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is State.Failure -> showOnFailure()
                 State.Loading -> {}
@@ -78,6 +78,7 @@ class AlarmFragment : Fragment() {
             }
         }
     }
+
     private fun requestNotificationPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ActivityCompat.requestPermissions(
@@ -137,6 +138,7 @@ class AlarmFragment : Fragment() {
         val constraints: CalendarConstraints = CalendarConstraints.Builder()
             .setOpenAt(startDate)
             .setStart(startDate)
+            .setValidator(DateValidatorPointForward.now())
             .build()
         val datePicker = MaterialDatePicker
             .Builder

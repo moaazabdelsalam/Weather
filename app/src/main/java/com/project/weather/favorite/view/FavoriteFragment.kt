@@ -20,6 +20,7 @@ import com.project.weather.favorite.viewmodel.FavoriteViewModelFactory
 import com.project.weather.local.ConcreteLocalSource
 import com.project.weather.model.FavoriteLocation
 import com.project.weather.model.State
+import com.project.weather.network.MyConnectivityManager
 import com.project.weather.network.WeatherClient
 import com.project.weather.repo.Repo
 import com.project.weather.utils.collectLatestFlowOnLifecycle
@@ -34,8 +35,20 @@ class FavoriteFragment : Fragment() {
     private var favoriteList: MutableList<FavoriteLocation> = mutableListOf()
     private lateinit var _view: View
     private val listener: (FavoriteLocation) -> Unit = {
-        favoriteViewModel.setSelectedItem(it)
-        Navigation.findNavController(_view).navigate(R.id.action_favoriteFragment_to_detailsFragment)
+        val myConnectiviy = MyConnectivityManager(requireContext())
+        if (myConnectiviy.isConnectedToWifi()) {
+            favoriteViewModel.setSelectedItem(it)
+            Navigation.findNavController(_view)
+                .navigate(R.id.action_favoriteFragment_to_detailsFragment)
+        } else {
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("No Connection")
+                .setMessage("check you connection then try again")
+                .setNeutralButton("ok") { dialog, which ->
+                    dialog.dismiss()
+                }
+                .show()
+        }
     }
 
     override fun onCreateView(

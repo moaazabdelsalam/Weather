@@ -21,19 +21,16 @@ class MyConnectivityManager(private val context: Context) {
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onUnavailable() {
             super.onUnavailable()
-            Log.i("TAG", "onUnavailable: ")
             _isConnected.value = false
         }
 
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
-            Log.i("TAG", "onAvailable: ")
             _isConnected.value = true
         }
 
         override fun onLost(network: Network) {
             super.onLost(network)
-            Log.i("TAG", "onLost: ")
             _isConnected.value = false
         }
     }

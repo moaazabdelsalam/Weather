@@ -1,5 +1,7 @@
 package com.project.weather.favorite.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.project.weather.SharedViewModel
@@ -32,18 +34,27 @@ class FavoriteViewModel(
     val favoriteList: StateFlow<State<List<FavoriteLocation>>>
         get() = _favoriteList
 
+    private var _lFavoriteList: MutableLiveData<State<List<FavoriteLocation>>> =
+        MutableLiveData(State.Loading)
+    val lFavoriteList: LiveData<State<List<FavoriteLocation>>>
+        get() = _lFavoriteList
+
     init {
         getAllFavorite()
     }
 
-    fun getAllFavorite() {
+    private fun getAllFavorite() {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getAllFavoriteLocations().collectLatest { list ->
                 withContext(Dispatchers.Main) {
-                    if (list.isEmpty())
+                    if (list.isEmpty()){
                         _favoriteList.value = State.Failure("No Data Found...")
-                    else
+                        _lFavoriteList.postValue(State.Failure("No Data Found..."))
+                    }
+                    else {
                         _favoriteList.value = State.Success(list)
+                        _lFavoriteList.postValue(State.Success(list))
+                    }
                 }
             }
         }

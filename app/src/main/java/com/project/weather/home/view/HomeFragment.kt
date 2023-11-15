@@ -163,10 +163,10 @@ class HomeFragment : Fragment() {
                 .placeholder(R.drawable.weather_icon_placeholder)
                 .into(currentWeatherIcon)
             currentWeatherDescriptionTxtV.text = weatherData.current.weather[0].description
-            currentTempTxtV.text = weatherData.current.temp.toInt().toString()
-            currentFeelsLikeValueTxt.text = weatherData.current.feelsLike.toInt().toString()
+            //currentTempTxtV.text = weatherData.current.temp.toInt().toString()
+            //currentFeelsLikeValueTxt.text = weatherData.current.feelsLike.toInt().toString()
             humidityValueTxtV.text = weatherData.current.humidity.toString()
-            windSpeedValueTxtV.text = weatherData.current.windSpeed.toString()
+            //windSpeedValueTxtV.text = weatherData.current.windSpeed.toString()
             pressureValueTxtV.text = weatherData.current.pressure.toString()
             cloudsValueTxtV.text = weatherData.current.clouds.toString()
             sunriseValueTxtV.text = "${sunrise[Constants.TIME_KEY]} ${sunrise[Constants.AM_PM_KEY]}"
@@ -182,19 +182,22 @@ class HomeFragment : Fragment() {
             val dailyList = weatherData.daily.toMutableList()
             dailyList.removeAt(0)
             dailyAdapter.submitList(dailyList)
-            checkUnits()
+            checkUnits(weatherData.current.temp, weatherData.current.feelsLike, weatherData.current.windSpeed)
             homeScrollView.visibility = View.VISIBLE
             progressTxt.visibility = View.GONE
         }
     }
 
-    private fun checkUnits() {
+    private fun checkUnits(temp: Double, feelsLike: Double, speed: Double) {
+
         collectLatestFlowOnLifecycle(homeViewModel.getTemperatureUnit()) { tempUnit ->
             when (tempUnit) {
                 Constants.PREF_TEMP_C -> {
                     binding.apply {
                         currentTempUnitTxtV.text = resources.getString(R.string.celsius)
                         fellsLikeTempUnitTxtV.text = resources.getString(R.string.celsius)
+                        currentTempTxtV.text = temp.toInt().toString()
+                        currentFeelsLikeValueTxt.text = feelsLike.toInt().toString()
                     }
                     hourlyAdapter.tempUnit.value = tempUnit
                     dailyAdapter.tempUnit.value = tempUnit
@@ -204,11 +207,14 @@ class HomeFragment : Fragment() {
                     binding.apply {
                         currentTempUnitTxtV.text = resources.getString(R.string.kelvin)
                         fellsLikeTempUnitTxtV.text = resources.getString(R.string.kelvin)
-                        currentTempTxtV.text =
-                            celsiusToKelvin(currentTempTxtV.text.toString().toDouble()).toString()
+                        val converted =
+                            celsiusToKelvin(temp).toInt().toString()
+                        Log.i(TAG, "checkUnits: $converted")
+                        currentTempTxtV.text = converted
+
                         currentFeelsLikeValueTxt.text =
                             celsiusToKelvin(
-                                currentFeelsLikeValueTxt.text.toString().toDouble()
+                                feelsLike
                             ).toString()
                     }
                     hourlyAdapter.tempUnit.value = tempUnit
@@ -221,11 +227,11 @@ class HomeFragment : Fragment() {
                         fellsLikeTempUnitTxtV.text = resources.getString(R.string.fahrenheit)
                         currentTempTxtV.text =
                             celsiusToFahrenheit(
-                                currentTempTxtV.text.toString().toDouble()
+                                temp
                             ).toString()
                         currentFeelsLikeValueTxt.text =
                             celsiusToFahrenheit(
-                                currentFeelsLikeValueTxt.text.toString().toDouble()
+                                feelsLike
                             ).toString()
                     }
                     hourlyAdapter.tempUnit.value = tempUnit
@@ -236,14 +242,17 @@ class HomeFragment : Fragment() {
 
         collectLatestFlowOnLifecycle(homeViewModel.getSpeedUnit()) { speedUnit ->
             when (speedUnit) {
-                Constants.PREF_SPEED_METER -> binding.windSpeedUnitTxtV.text =
-                    resources.getString(R.string.wind_speed_unit_meter)
+                Constants.PREF_SPEED_METER -> {
+                    binding.windSpeedValueTxtV.text = speed.toString()
+                    binding.windSpeedUnitTxtV.text =
+                        resources.getString(R.string.wind_speed_unit_meter)
+                }
 
                 Constants.PREF_SPEED_MILE -> {
                     binding.apply {
                         windSpeedUnitTxtV.text = resources.getString(R.string.wind_speed_unit_mile)
                         windSpeedValueTxtV.text = metersPerSecondToMilesPerHour(
-                            windSpeedValueTxtV.text.toString().toDouble()
+                            speed
                         ).toString()
                     }
                 }

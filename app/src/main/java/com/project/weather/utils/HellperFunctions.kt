@@ -1,5 +1,6 @@
 package com.project.weather.utils
 
+import android.util.Log
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -40,12 +41,12 @@ fun getDateAndTime(s: Long): Map<String, String> {
     )
 }
 
-fun celsiusToKelvin(celsius: Double): Double {
-    return String.format("%.2f", (celsius + 273.15)).toDouble()
+fun celsiusToKelvin(celsius: Double): Int {
+    return (celsius + 273.15).toInt()
 }
 
-fun celsiusToFahrenheit(celsius: Double): Double {
-    return String.format("%.2f", ((celsius * 9 / 5) + 32)).toDouble()
+fun celsiusToFahrenheit(celsius: Double): Int {
+    return ((celsius * 9 / 5) + 32).toInt()
 }
 
 fun metersPerSecondToMilesPerHour(metersPerSecond: Double): Double {
