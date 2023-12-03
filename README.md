@@ -21,20 +21,20 @@ The Weather Forecast App is an Android mobile application designed to provide us
 ### Features:
 1. **Current Location Weather:** Display real-time weather and temperature based on the user's current location.
    
-   <img src="./images/home.jpg" alt="Home screenshot" width=20%>  <img src="./images/home_days.jpg" alt="Home days screenshot" width=20%> 
+   <img src="./images/home.jpg" alt="Home screenshot" width=30%>  <img src="./images/home_days.jpg" alt="Home days screenshot" width=30%> 
     
 2. **Favorite Locations:** Enable users to create a list of favorite locations and receive weather updates for each.
 
-   <img src="./images/favorite.jpg" alt="favorite screenshot" width=20%>  <img src="./images/add_favorite.jpg" alt="add favorite screenshot" width=20%>  <img src="./images/add_favorite_2.jpg" alt="add favorite2 screenshot" width=20%>  <img src="./images/remove_favorite.jpg" alt="remove favorite screenshot" width=20%>
+   <img src="./images/favorite.jpg" alt="favorite screenshot" width=30%>  <img src="./images/add_favorite.jpg" alt="add favorite screenshot" width=30%>  <img src="./images/add_favorite_2.jpg" alt="add favorite2 screenshot" width=30%>  <img src="./images/remove_favorite.jpg" alt="remove favorite screenshot" width=30%>
      
 3. **Forecast Alerts:** Set alerts for specific forecast events to stay informed about changing weather conditions.
 
-   <img src="./images/alarm_list.jpg" alt="alarm list screenshot" width=20%>  <img src="./images/alarm_days.jpg" alt="alarm day screenshot" width=20%>  <img src="./images/alarm_hours.jpg" alt="alarm hours screenshot" width=20%>  <img src="./images/notifications.jpg" alt="notification screenshot" width=20%>
+   <img src="./images/alarm_list.jpg" alt="alarm list screenshot" width=30%>  <img src="./images/alarm_days.jpg" alt="alarm day screenshot" width=30%>  <img src="./images/alarm_hours.jpg" alt="alarm hours screenshot" width=30%>  <img src="./images/notifications.jpg" alt="notification screenshot" width=30%>
    
 4. **Location Settings:** Enable user to find location with GPS or manually from map.
    
-   <img src="./images/location_settings.jpg" alt="location in settings screenshot" width=20%>  <img src="./images/set_home_location.jpg" alt="set home location screenshot" width=20%>  <img src="./images/home_changed.jpg" alt="changed home screenshot" width=20%>
+   <img src="./images/location_settings.jpg" alt="location in settings screenshot" width=30%>  <img src="./images/set_home_location.jpg" alt="set home location screenshot" width=30%>  <img src="./images/home_changed.jpg" alt="changed home screenshot" width=30%>
    
 5. **More Customizations:** Eable user to change his prefered language, wind speed unit and temperature unit.
 
-   <img src="./images/language_settings.jpg" alt="language settings screenshot" width=20%>  <img src="./images/speed unit settings.jpg" alt="wind speed screenshot" width=20%>  <img src="./images/temperature settings.jpg" alt="temperature settings screenshot" width=20%>
+   <img src="./images/language_settings.jpg" alt="language settings screenshot" width=30%>  <img src="./images/speed unit settings.jpg" alt="wind speed screenshot" width=30%>  <img src="./images/temperature settings.jpg" alt="temperature settings screenshot" width=30%>
